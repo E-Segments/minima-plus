@@ -21,13 +21,56 @@ A minimal, modern Jekyll theme with Tailwind CSS v4. The next evolution of Jekyl
 
 ## 🚀 Quick Start
 
-### Use This Template
+### Option 1: Use This Template (Standalone Site)
 
 1. Click the **"Use this template"** button above
 2. Name your repository (e.g., `username.github.io` for user site)
 3. Clone your new repository
 4. Edit `_config.yml` with your details
 5. Push changes - GitHub Actions will deploy automatically!
+
+### Option 2: Remote Theme (For Existing Repos)
+
+Add documentation to your existing project without copying all theme files:
+
+**1. Create a `docs/` folder with these files:**
+
+```
+your-project/
+├── src/                    # Your existing code
+├── docs/
+│   ├── _config.yml
+│   ├── _docs/
+│   │   └── getting-started.md
+│   ├── Gemfile
+│   └── index.md
+└── README.md
+```
+
+**2. docs/_config.yml:**
+```yaml
+remote_theme: E-Segments/minima-plus
+baseurl: "/your-repo-name"
+
+title: "Your Project Docs"
+description: "Documentation for your project"
+
+theme_config:
+  colors:
+    primary: "blue"
+```
+
+**3. docs/Gemfile:**
+```ruby
+source "https://rubygems.org"
+gem "jekyll", "~> 4.3"
+gem "jekyll-remote-theme"
+```
+
+**4. Enable GitHub Pages:**
+- Go to **Settings** → **Pages**
+- Source: **Deploy from a branch**
+- Branch: `main` → `/docs`
 
 ### Local Development
 

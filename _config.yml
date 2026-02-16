@@ -9,6 +9,13 @@ author: "Your Name"
 markdown: kramdown
 permalink: /blog/:title/
 
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-remote-theme
+
 # Kramdown settings (for Prism.js compatibility)
 kramdown:
   syntax_highlighter: none
