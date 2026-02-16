@@ -1,0 +1,15 @@
+{% if site.analytics.google_analytics and site.analytics.google_analytics != "" %}
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ site.analytics.google_analytics }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '{{ site.analytics.google_analytics }}');
+</script>
+{% endif %}
+
+{% if site.analytics.plausible and site.analytics.plausible != "" %}
+<!-- Plausible Analytics -->
+<script defer data-domain="{{ site.analytics.plausible }}" src="https://plausible.io/js/script.js"></script>
+{% endif %}

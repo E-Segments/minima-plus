@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  {% include head.html %}
+  {% include code-highlight.html %}
+</head>
+<body class="min-h-screen flex flex-col bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased">
+  {% include header.html %}
+
+  <main class="flex-grow">
+    {{ content }}
+  </main>
+
+  {% include footer.html %}
+
+  <!-- Heading Anchor Links -->
+  {% include heading-anchors.html %}
+
+  <!-- Back to Top Button -->
+  {% include back-to-top.html %}
+</body>
+</html>

@@ -1,0 +1,61 @@
+<footer class="bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800/80 mt-auto">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
+      <!-- Brand column -->
+      <div class="col-span-2 md:col-span-1">
+        <a href="{{ '/' | relative_url }}" class="inline-block text-xl lg:text-2xl font-bold text-slate-900 dark:text-white font-heading hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+          {{ site.title }}
+        </a>
+        <p class="mt-4 text-sm lg:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+          {{ site.description }}
+        </p>
+
+        <!-- Social links -->
+        {% if site.data.social %}
+        <div class="mt-6 flex space-x-3">
+          {% for social in site.data.social %}
+          <a href="{{ social.url }}"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="p-2 text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-all"
+             aria-label="{{ social.name }}">
+            {{ social.icon }}
+          </a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Footer columns -->
+      {% for column in site.data.footer.columns %}
+      <div>
+        <h3 class="text-xs lg:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+          {{ column.title }}
+        </h3>
+        <ul class="mt-4 lg:mt-6 space-y-3 lg:space-y-4">
+          {% for link in column.links %}
+          <li>
+            <a href="{{ link.url | relative_url }}"
+               class="text-sm lg:text-base text-slate-600 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors">
+              {{ link.title }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="mt-12 lg:mt-16 pt-8 border-t border-slate-200 dark:border-slate-800">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="text-sm text-slate-500 dark:text-slate-500">
+          &copy; {{ site.data.footer.copyright | default: site.time | date: '%Y' }} {{ site.title }}. All rights reserved.
+        </p>
+        <p class="text-sm text-slate-400 dark:text-slate-600">
+          Built with <a href="https://jekyllrb.com" target="_blank" rel="noopener" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Jekyll</a> & <a href="https://tailwindcss.com" target="_blank" rel="noopener" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Tailwind CSS</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>

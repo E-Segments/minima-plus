@@ -1,0 +1,13 @@
+# Main navigation links
+main:
+  - title: "Home"
+    url: "/"
+  - title: "Blog"
+    url: "/blog/"
+  - title: "Docs"
+    url: "/docs/"
+
+# Call to action button in header (optional)
+cta:
+  title: "Get Started"
+  url: "/docs/getting-started/"

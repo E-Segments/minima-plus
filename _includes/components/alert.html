@@ -1,0 +1,54 @@
+{% comment %}
+Alert/Callout Component
+
+Parameters:
+  type    - info, warning, success, or danger
+  title   - Alert title (optional)
+  content - Alert message
+{% endcomment %}
+
+{% assign alert_type = include.type | default: "info" %}
+
+{% if alert_type == "info" %}
+  {% assign bg_class = "bg-blue-50 dark:bg-blue-900/20" %}
+  {% assign border_class = "border-blue-200 dark:border-blue-800" %}
+  {% assign text_class = "text-blue-800 dark:text-blue-200" %}
+  {% assign icon_class = "text-blue-500" %}
+  {% capture icon %}<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>{% endcapture %}
+{% elsif alert_type == "warning" %}
+  {% assign bg_class = "bg-amber-50 dark:bg-amber-900/20" %}
+  {% assign border_class = "border-amber-200 dark:border-amber-800" %}
+  {% assign text_class = "text-amber-800 dark:text-amber-200" %}
+  {% assign icon_class = "text-amber-500" %}
+  {% capture icon %}<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>{% endcapture %}
+{% elsif alert_type == "success" %}
+  {% assign bg_class = "bg-green-50 dark:bg-green-900/20" %}
+  {% assign border_class = "border-green-200 dark:border-green-800" %}
+  {% assign text_class = "text-green-800 dark:text-green-200" %}
+  {% assign icon_class = "text-green-500" %}
+  {% capture icon %}<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>{% endcapture %}
+{% elsif alert_type == "danger" %}
+  {% assign bg_class = "bg-red-50 dark:bg-red-900/20" %}
+  {% assign border_class = "border-red-200 dark:border-red-800" %}
+  {% assign text_class = "text-red-800 dark:text-red-200" %}
+  {% assign icon_class = "text-red-500" %}
+  {% capture icon %}<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>{% endcapture %}
+{% endif %}
+
+<div class="p-4 rounded-lg border {{ bg_class }} {{ border_class }}">
+  <div class="flex">
+    <div class="flex-shrink-0 {{ icon_class }}">
+      {{ icon }}
+    </div>
+    <div class="ml-3">
+      {% if include.title %}
+      <h3 class="text-sm font-medium {{ text_class }}">
+        {{ include.title }}
+      </h3>
+      {% endif %}
+      <div class="{% if include.title %}mt-2{% endif %} text-sm {{ text_class }}">
+        {{ include.content }}
+      </div>
+    </div>
+  </div>
+</div>

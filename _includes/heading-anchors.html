@@ -1,0 +1,151 @@
+<!-- Heading Anchor Links -->
+<script>
+(function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    // Find all headings in article/main content
+    const article = document.querySelector('article') || document.querySelector('main');
+    if (!article) return;
+
+    const headings = article.querySelectorAll('h2[id], h3[id], h4[id], h5[id], h6[id]');
+
+    headings.forEach(function(heading) {
+      // Create anchor link
+      const anchor = document.createElement('a');
+      anchor.href = '#' + heading.id;
+      anchor.className = 'heading-anchor';
+      anchor.setAttribute('aria-label', 'Link to this section');
+      anchor.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+        </svg>
+      `;
+
+      // Copy link on click
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = window.location.origin + window.location.pathname + '#' + heading.id;
+
+        // Copy to clipboard
+        navigator.clipboard.writeText(url).then(function() {
+          // Show tooltip
+          showCopiedTooltip(anchor);
+          // Update URL without scrolling
+          history.pushState(null, null, '#' + heading.id);
+        }).catch(function() {
+          // Fallback: just navigate
+          window.location.hash = heading.id;
+        });
+      });
+
+      // Make heading a flex container
+      heading.style.position = 'relative';
+      heading.classList.add('heading-with-anchor');
+      heading.appendChild(anchor);
+    });
+
+    // Tooltip function
+    function showCopiedTooltip(anchor) {
+      const tooltip = document.createElement('span');
+      tooltip.className = 'anchor-tooltip';
+      tooltip.textContent = 'Link copied!';
+      anchor.appendChild(tooltip);
+
+      // Animate in
+      requestAnimationFrame(function() {
+        tooltip.classList.add('show');
+      });
+
+      // Remove after delay
+      setTimeout(function() {
+        tooltip.classList.remove('show');
+        setTimeout(function() {
+          tooltip.remove();
+        }, 200);
+      }, 1500);
+    }
+  });
+})();
+</script>
+
+<style>
+  .heading-with-anchor {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .heading-anchor {
+    opacity: 0;
+    color: var(--color-primary-500, #6366f1);
+    transition: opacity 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    flex-shrink: 0;
+    padding: 0.25rem;
+    border-radius: 0.375rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .heading-with-anchor:hover .heading-anchor,
+  .heading-anchor:focus {
+    opacity: 1;
+  }
+
+  .heading-anchor:hover {
+    color: var(--color-primary-600, #4f46e5);
+    background-color: var(--color-primary-50, #eef2ff);
+    transform: scale(1.1);
+  }
+
+  .dark .heading-anchor:hover {
+    background-color: rgba(99, 102, 241, 0.2);
+  }
+
+  .heading-anchor:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-primary-500, #6366f1);
+  }
+
+  /* Tooltip */
+  .anchor-tooltip {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: #1e293b;
+    color: white;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  .anchor-tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-bottom-color: #1e293b;
+  }
+
+  .anchor-tooltip.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(8px);
+  }
+
+  .dark .anchor-tooltip {
+    background: #f1f5f9;
+    color: #1e293b;
+  }
+
+  .dark .anchor-tooltip::before {
+    border-bottom-color: #f1f5f9;
+  }
+</style>

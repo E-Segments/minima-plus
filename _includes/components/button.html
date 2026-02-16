@@ -1,0 +1,40 @@
+{% comment %}
+Button Component
+
+Parameters:
+  text     - Button text
+  link     - URL link
+  style    - primary, secondary, or outline
+  size     - sm, md, or lg
+  icon     - Optional SVG icon HTML
+
+Example:
+  include components/button.html text="Click" link="/" style="primary" size="md"
+{% endcomment %}
+
+{% assign btn_style = include.style | default: "primary" %}
+{% assign btn_size = include.size | default: "md" %}
+
+{% if btn_style == "primary" %}
+  {% assign style_classes = "text-white bg-primary-600 hover:bg-primary-700 focus:ring-primary-500" %}
+{% elsif btn_style == "secondary" %}
+  {% assign style_classes = "text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 focus:ring-slate-500" %}
+{% elsif btn_style == "outline" %}
+  {% assign style_classes = "text-primary-600 dark:text-primary-400 border-2 border-primary-600 dark:border-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:ring-primary-500" %}
+{% endif %}
+
+{% if btn_size == "sm" %}
+  {% assign size_classes = "px-3 py-1.5 text-sm" %}
+{% elsif btn_size == "md" %}
+  {% assign size_classes = "px-4 py-2 text-sm" %}
+{% elsif btn_size == "lg" %}
+  {% assign size_classes = "px-6 py-3 text-base" %}
+{% endif %}
+
+<a href="{{ include.link | relative_url }}"
+   class="inline-flex items-center justify-center {{ size_classes }} font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-900 {{ style_classes }}">
+  {% if include.icon %}
+  <span class="mr-2">{{ include.icon }}</span>
+  {% endif %}
+  {{ include.text }}
+</a>

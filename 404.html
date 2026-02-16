@@ -1,0 +1,43 @@
+---
+layout: default
+title: Page Not Found
+permalink: /404.html
+---
+
+<section class="py-20 md:py-32">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="text-6xl mb-8">
+      <span class="text-primary-600 dark:text-primary-400 font-bold">404</span>
+    </div>
+
+    <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white font-heading mb-4">
+      Page not found
+    </h1>
+
+    <p class="text-xl text-slate-600 dark:text-slate-400 mb-8">
+      Sorry, the page you're looking for doesn't exist or has been moved.
+    </p>
+
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      {% include components/button.html text="Go Home" link="/" style="primary" size="lg" %}
+      {% include components/button.html text="View Blog" link="/blog/" style="secondary" size="lg" %}
+    </div>
+
+    <div class="mt-12 pt-12 border-t border-slate-200 dark:border-slate-800">
+      <p class="text-sm text-slate-500 dark:text-slate-400">
+        Looking for something specific? Try these:
+      </p>
+      <ul class="mt-4 space-y-2">
+        <li>
+          <a href="/" class="text-primary-600 dark:text-primary-400 hover:underline">Home</a>
+        </li>
+        <li>
+          <a href="/blog/" class="text-primary-600 dark:text-primary-400 hover:underline">Blog</a>
+        </li>
+        <li>
+          <a href="/docs/" class="text-primary-600 dark:text-primary-400 hover:underline">Documentation</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>

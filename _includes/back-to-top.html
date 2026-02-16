@@ -1,0 +1,57 @@
+<!-- Back to Top Button -->
+<button
+  id="back-to-top"
+  aria-label="Back to top"
+  class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-primary-600 text-white shadow-lg opacity-0 invisible translate-y-4 transition-all duration-300 hover:bg-primary-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+  </svg>
+</button>
+
+<script>
+(function() {
+  const backToTop = document.getElementById('back-to-top');
+  if (!backToTop) return;
+
+  const scrollThreshold = 400;
+  let isVisible = false;
+
+  function toggleVisibility() {
+    const shouldShow = window.scrollY > scrollThreshold;
+
+    if (shouldShow && !isVisible) {
+      backToTop.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+      backToTop.classList.add('opacity-100', 'visible', 'translate-y-0');
+      isVisible = true;
+    } else if (!shouldShow && isVisible) {
+      backToTop.classList.add('opacity-0', 'invisible', 'translate-y-4');
+      backToTop.classList.remove('opacity-100', 'visible', 'translate-y-0');
+      isVisible = false;
+    }
+  }
+
+  // Throttle scroll events
+  let ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      window.requestAnimationFrame(function() {
+        toggleVisibility();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // Scroll to top on click
+  backToTop.addEventListener('click', function() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+
+  // Initial check
+  toggleVisibility();
+})();
+</script>

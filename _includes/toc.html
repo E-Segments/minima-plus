@@ -1,0 +1,109 @@
+<!-- Dynamic Table of Contents -->
+<nav id="toc" class="toc hidden" aria-label="Table of contents">
+  <h2 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">
+    On this page
+  </h2>
+  <ul id="toc-list" class="space-y-1 text-sm">
+    <!-- Populated by JavaScript -->
+  </ul>
+</nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const tocNav = document.getElementById('toc');
+  const tocList = document.getElementById('toc-list');
+  const article = document.querySelector('article') || document.querySelector('.prose');
+
+  if (!article || !tocList) return;
+
+  // Find all headings (h2 and h3)
+  const headings = article.querySelectorAll('h2, h3');
+
+  if (headings.length < 2) {
+    // Don't show TOC if less than 2 headings
+    return;
+  }
+
+  // Show the TOC
+  tocNav.classList.remove('hidden');
+
+  headings.forEach(function(heading, index) {
+    // Ensure heading has an ID
+    if (!heading.id) {
+      heading.id = 'heading-' + index;
+    }
+
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+
+    a.href = '#' + heading.id;
+    a.textContent = heading.textContent;
+    a.setAttribute('data-heading-id', heading.id);
+
+    // Base styles
+    a.className = 'block py-1.5 border-l-2 transition-all duration-200';
+
+    // Indent h3
+    if (heading.tagName === 'H3') {
+      a.className += ' pl-4 ml-2 text-slate-500 dark:text-slate-400 border-transparent hover:border-slate-300 dark:hover:border-slate-600 hover:text-slate-700 dark:hover:text-slate-300';
+    } else {
+      a.className += ' pl-3 text-slate-600 dark:text-slate-300 font-medium border-transparent hover:border-primary-400 dark:hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400';
+    }
+
+    li.appendChild(a);
+    tocList.appendChild(li);
+  });
+
+  // Highlight current section on scroll
+  const tocLinks = tocList.querySelectorAll('a');
+
+  function highlightToc() {
+    let current = '';
+
+    headings.forEach(function(heading) {
+      const rect = heading.getBoundingClientRect();
+      if (rect.top <= 120) {
+        current = heading.id;
+      }
+    });
+
+    tocLinks.forEach(function(link) {
+      const headingId = link.getAttribute('data-heading-id');
+      const isH3 = link.classList.contains('ml-2');
+
+      // Reset styles
+      link.classList.remove(
+        'border-primary-500', 'dark:border-primary-400',
+        'text-primary-600', 'dark:text-primary-400',
+        'font-semibold', 'bg-primary-50', 'dark:bg-primary-900/20'
+      );
+      link.classList.add('border-transparent');
+
+      if (headingId === current) {
+        link.classList.remove('border-transparent');
+        link.classList.add(
+          'border-primary-500', 'dark:border-primary-400',
+          'text-primary-600', 'dark:text-primary-400'
+        );
+        if (!isH3) {
+          link.classList.add('font-semibold', 'bg-primary-50', 'dark:bg-primary-900/20');
+        }
+      }
+    });
+  }
+
+  // Throttle scroll
+  let ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      window.requestAnimationFrame(function() {
+        highlightToc();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  highlightToc();
+});
+</script>

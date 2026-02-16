@@ -1,0 +1,88 @@
+# Site basics
+title: "Minima+"
+description: "A modern Jekyll theme with Tailwind CSS v4"
+url: ""
+baseurl: ""
+author: "Your Name"
+
+# Build settings
+markdown: kramdown
+permalink: /blog/:title/
+
+# Kramdown settings (for Prism.js compatibility)
+kramdown:
+  syntax_highlighter: none
+  input: GFM
+  hard_wrap: false
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /docs/:path/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+  - scope:
+      path: ""
+      type: "docs"
+    values:
+      layout: "docs"
+
+# Theme Configuration
+theme_config:
+  # Colors (Tailwind color names)
+  colors:
+    primary: "indigo"
+    secondary: "slate"
+    accent: "amber"
+
+  # Typography
+  fonts:
+    heading: "Inter"
+    body: "Inter"
+    mono: "JetBrains Mono"
+
+  # Layout
+  layout:
+    max_width: "6xl"
+    content_width: "3xl"
+    sidebar: true
+
+  # Components visibility
+  components:
+    show_toc: true
+    show_reading_time: true
+    show_date: true
+    show_author: true
+    show_tags: true
+    show_categories: true
+
+  # Features
+  features:
+    dark_mode: true
+    search: false
+    comments: false
+
+# SEO
+seo:
+  og_image: "/assets/images/og-default.png"
+  twitter_handle: ""
+
+# Analytics (optional)
+analytics:
+  google_analytics: ""
+  plausible: ""
+
+# Exclude from build
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - README.md

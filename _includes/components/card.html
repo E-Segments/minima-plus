@@ -1,0 +1,46 @@
+{% comment %}
+Card Component
+
+Parameters:
+  title       - Card title
+  description - Card description text
+  link        - URL link (optional)
+  link_text   - Link button text (optional)
+  icon        - SVG icon HTML (optional)
+{% endcomment %}
+
+<div class="group p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-primary-600 transition-all hover:shadow-lg">
+  {% if include.icon %}
+  <div class="w-12 h-12 flex items-center justify-center rounded-lg bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400 mb-4">
+    {{ include.icon }}
+  </div>
+  {% endif %}
+
+  {% if include.title %}
+  <h3 class="text-lg font-semibold text-slate-900 dark:text-white font-heading">
+    {% if include.link %}
+    <a href="{{ include.link | relative_url }}" class="hover:text-primary-600 dark:hover:text-primary-400">
+      {{ include.title }}
+    </a>
+    {% else %}
+    {{ include.title }}
+    {% endif %}
+  </h3>
+  {% endif %}
+
+  {% if include.description %}
+  <p class="mt-2 text-slate-600 dark:text-slate-400">
+    {{ include.description }}
+  </p>
+  {% endif %}
+
+  {% if include.link and include.link_text %}
+  <a href="{{ include.link | relative_url }}"
+     class="inline-flex items-center mt-4 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 group-hover:underline">
+    {{ include.link_text }}
+    <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+  </a>
+  {% endif %}
+</div>

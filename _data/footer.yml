@@ -1,0 +1,31 @@
+# Footer configuration
+copyright: "2024"
+
+# Footer columns
+columns:
+  - title: "Product"
+    links:
+      - title: "Features"
+        url: "/#features"
+      - title: "Documentation"
+        url: "/docs/"
+      - title: "Pricing"
+        url: "/#pricing"
+
+  - title: "Resources"
+    links:
+      - title: "Blog"
+        url: "/blog/"
+      - title: "Changelog"
+        url: "/changelog/"
+      - title: "Support"
+        url: "/support/"
+
+  - title: "Company"
+    links:
+      - title: "About"
+        url: "/about/"
+      - title: "Contact"
+        url: "/contact/"
+      - title: "Privacy"
+        url: "/privacy/"
