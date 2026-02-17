@@ -1,0 +1,195 @@
+<!-- Stats Counter: Animated number counters with scroll-triggered animation -->
+{%- assign stats_style = include.style | default: "default" -%}
+{%- assign stats_duration = include.duration | default: 2000 -%}
+{%- assign random_num = "now" | date: "%s%N" | slice: -6, 6 -%}
+{%- assign stats_id = include.id | default: "stats" -%}
+{%- assign stats_id = stats_id | append: "-" | append: random_num -%}
+
+{%- if include.stats.first.value -%}
+  {%- assign stats_array = include.stats -%}
+  {%- assign stats_count = stats_array.size -%}
+{%- else -%}
+  {%- assign stats_string = include.stats | split: "," -%}
+  {%- assign stats_count = stats_string.size -%}
+{%- endif -%}
+
+{%- case include.columns -%}
+  {%- when 2 -%}
+    {%- assign grid_cols = "grid-cols-2" -%}
+  {%- when 3 -%}
+    {%- assign grid_cols = "grid-cols-1 sm:grid-cols-3" -%}
+  {%- when 4 -%}
+    {%- assign grid_cols = "grid-cols-2 lg:grid-cols-4" -%}
+  {%- else -%}
+    {%- if stats_count == 2 -%}
+      {%- assign grid_cols = "grid-cols-2" -%}
+    {%- elsif stats_count == 3 -%}
+      {%- assign grid_cols = "grid-cols-1 sm:grid-cols-3" -%}
+    {%- else -%}
+      {%- assign grid_cols = "grid-cols-2 lg:grid-cols-4" -%}
+    {%- endif -%}
+{%- endcase -%}
+
+{%- if stats_style == "cards" -%}
+  {%- assign container_class = "grid gap-4 " | append: grid_cols -%}
+  {%- assign item_class = "bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 text-center" -%}
+{%- elsif stats_style == "minimal" -%}
+  {%- assign container_class = "flex flex-wrap justify-center gap-8 md:gap-12" -%}
+  {%- assign item_class = "text-center" -%}
+{%- else -%}
+  {%- assign container_class = "grid gap-6 " | append: grid_cols -%}
+  {%- assign item_class = "text-center p-4 border-l-2 border-blue-500 dark:border-blue-400" -%}
+{%- endif -%}
+
+<div class="stats-counter {{ container_class }}" id="{{ stats_id }}" data-duration="{{ stats_duration }}">
+  {%- if stats_array -%}
+    {%- for stat in stats_array -%}
+      <div class="{{ item_class }}">
+        <div class="stat-value text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1"
+             data-target="{{ stat.value }}"
+             data-prefix="{{ stat.prefix | default: '' }}"
+             data-suffix="{{ stat.suffix | default: '' }}"
+             data-decimals="{{ stat.decimals | default: 0 }}">
+          {{ stat.prefix }}0{{ stat.suffix }}
+        </div>
+        <div class="stat-label text-sm md:text-base text-gray-600 dark:text-gray-400">
+          {{ stat.label }}
+        </div>
+      </div>
+    {%- endfor -%}
+  {%- else -%}
+    {%- for stat_str in stats_string -%}
+      {%- assign parts = stat_str | split: ":" -%}
+      {%- assign stat_value = parts[0] | strip -%}
+      {%- assign stat_label = parts[1] | strip -%}
+      <div class="{{ item_class }}">
+        <div class="stat-value text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1"
+             data-target="{{ stat_value }}"
+             data-prefix=""
+             data-suffix=""
+             data-decimals="0"
+             data-raw="{{ stat_value }}">
+          0
+        </div>
+        <div class="stat-label text-sm md:text-base text-gray-600 dark:text-gray-400">
+          {{ stat_label }}
+        </div>
+      </div>
+    {%- endfor -%}
+  {%- endif -%}
+</div>
+
+<script>
+(function() {
+  const container = document.getElementById('{{ stats_id }}');
+  if (!container) return;
+
+  const duration = parseInt(container.dataset.duration) || 2000;
+  const statElements = container.querySelectorAll('.stat-value');
+  let animated = false;
+
+  function parseValue(str) {
+    // Handle values like "10K", "1.5M", "99%", "$500", "24/7"
+    const raw = str.toString();
+    let prefix = '';
+    let suffix = '';
+    let numStr = raw;
+
+    // Extract prefix (non-numeric at start)
+    const prefixMatch = raw.match(/^([^0-9.]+)/);
+    if (prefixMatch) {
+      prefix = prefixMatch[1];
+      numStr = numStr.substring(prefix.length);
+    }
+
+    // Extract suffix (non-numeric at end, excluding decimals)
+    const suffixMatch = numStr.match(/([^0-9.]+)$/);
+    if (suffixMatch) {
+      suffix = suffixMatch[1];
+      numStr = numStr.substring(0, numStr.length - suffix.length);
+    }
+
+    // Handle special cases like "24/7"
+    if (raw.includes('/')) {
+      return { isSpecial: true, value: raw };
+    }
+
+    // Parse multipliers
+    let multiplier = 1;
+    if (suffix.toUpperCase() === 'K') {
+      multiplier = 1000;
+      suffix = 'K';
+    } else if (suffix.toUpperCase() === 'M') {
+      multiplier = 1000000;
+      suffix = 'M';
+    }
+
+    const num = parseFloat(numStr) || 0;
+
+    return {
+      isSpecial: false,
+      value: num,
+      multiplier: multiplier,
+      prefix: prefix,
+      suffix: suffix,
+      decimals: (numStr.includes('.') ? (numStr.split('.')[1] || '').length : 0)
+    };
+  }
+
+  function animateValue(el, parsed, duration) {
+    if (parsed.isSpecial) {
+      el.textContent = parsed.value;
+      return;
+    }
+
+    const target = parsed.value;
+    const prefix = el.dataset.prefix || parsed.prefix || '';
+    const suffix = el.dataset.suffix || parsed.suffix || '';
+    const decimals = parseInt(el.dataset.decimals) || parsed.decimals || 0;
+
+    const startTime = performance.now();
+
+    function update(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Easing function (ease-out-cubic)
+      const eased = 1 - Math.pow(1 - progress, 3);
+
+      const current = target * eased;
+      const formatted = decimals > 0 ? current.toFixed(decimals) : Math.floor(current).toLocaleString();
+
+      el.textContent = prefix + formatted + suffix;
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
+    }
+
+    requestAnimationFrame(update);
+  }
+
+  function startAnimation() {
+    if (animated) return;
+    animated = true;
+
+    statElements.forEach(el => {
+      const raw = el.dataset.raw || el.dataset.target;
+      const parsed = parseValue(raw);
+      animateValue(el, parsed, duration);
+    });
+  }
+
+  // Intersection Observer for scroll-triggered animation
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        startAnimation();
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.2 });
+
+  observer.observe(container);
+})();
+</script>

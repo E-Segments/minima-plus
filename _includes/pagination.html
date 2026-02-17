@@ -1,0 +1,106 @@
+{% comment %}
+Pagination Component - Reusable pagination controls
+
+Usage:
+  {% include pagination.html paginator=paginator %}
+
+Works with jekyll-paginate-v2
+{% endcomment %}
+
+{% if paginator.total_pages > 1 %}
+<nav class="pagination-nav mt-12 flex flex-col sm:flex-row items-center justify-between gap-4" aria-label="Pagination">
+  <!-- Showing X-Y of Z -->
+  <div class="text-sm text-slate-500 dark:text-slate-400 order-2 sm:order-1">
+    {% assign start_item = paginator.per_page | times: paginator.page | minus: paginator.per_page | plus: 1 %}
+    {% assign end_item = paginator.per_page | times: paginator.page %}
+    {% if end_item > paginator.total_posts %}
+      {% assign end_item = paginator.total_posts %}
+    {% endif %}
+    Showing <span class="font-medium text-slate-700 dark:text-slate-300">{{ start_item }}</span>-<span class="font-medium text-slate-700 dark:text-slate-300">{{ end_item }}</span> of <span class="font-medium text-slate-700 dark:text-slate-300">{{ paginator.total_posts }}</span>
+  </div>
+
+  <!-- Page numbers -->
+  <div class="flex items-center gap-1 order-1 sm:order-2">
+    <!-- Previous Button -->
+    {% if paginator.previous_page %}
+    <a href="{{ paginator.previous_page_path | relative_url }}"
+       class="pagination-btn flex items-center justify-center w-10 h-10 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors"
+       aria-label="Previous page">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </a>
+    {% else %}
+    <span class="pagination-btn flex items-center justify-center w-10 h-10 rounded-lg text-slate-300 dark:text-slate-700 cursor-not-allowed" aria-disabled="true">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </span>
+    {% endif %}
+
+    <!-- Page Numbers with ellipsis -->
+    {% assign page_start = paginator.page | minus: 2 %}
+    {% if page_start < 1 %}{% assign page_start = 1 %}{% endif %}
+    {% assign page_end = paginator.page | plus: 2 %}
+    {% if page_end > paginator.total_pages %}{% assign page_end = paginator.total_pages %}{% endif %}
+
+    <!-- First page + ellipsis -->
+    {% if page_start > 1 %}
+    <a href="{{ paginator.first_page_path | relative_url }}"
+       class="pagination-btn flex items-center justify-center w-10 h-10 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors">
+      1
+    </a>
+    {% if page_start > 2 %}
+    <span class="pagination-ellipsis flex items-center justify-center w-10 h-10 text-slate-400 dark:text-slate-600">...</span>
+    {% endif %}
+    {% endif %}
+
+    <!-- Page range -->
+    {% for page in (page_start..page_end) %}
+      {% if page == paginator.page %}
+      <span class="pagination-btn pagination-current flex items-center justify-center w-10 h-10 rounded-lg text-sm font-semibold bg-primary-600 text-white" aria-current="page">
+        {{ page }}
+      </span>
+      {% else %}
+        {% if page == 1 %}
+          {% assign page_path = paginator.first_page_path %}
+        {% else %}
+          {% assign page_path = site.paginate_path | replace: ':num', page %}
+        {% endif %}
+      <a href="{{ page_path | relative_url }}"
+         class="pagination-btn flex items-center justify-center w-10 h-10 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors">
+        {{ page }}
+      </a>
+      {% endif %}
+    {% endfor %}
+
+    <!-- Ellipsis + last page -->
+    {% if page_end < paginator.total_pages %}
+    {% if page_end < paginator.total_pages | minus: 1 %}
+    <span class="pagination-ellipsis flex items-center justify-center w-10 h-10 text-slate-400 dark:text-slate-600">...</span>
+    {% endif %}
+    <a href="{{ paginator.last_page_path | relative_url }}"
+       class="pagination-btn flex items-center justify-center w-10 h-10 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors">
+      {{ paginator.total_pages }}
+    </a>
+    {% endif %}
+
+    <!-- Next Button -->
+    {% if paginator.next_page %}
+    <a href="{{ paginator.next_page_path | relative_url }}"
+       class="pagination-btn flex items-center justify-center w-10 h-10 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors"
+       aria-label="Next page">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+    </a>
+    {% else %}
+    <span class="pagination-btn flex items-center justify-center w-10 h-10 rounded-lg text-slate-300 dark:text-slate-700 cursor-not-allowed" aria-disabled="true">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+    </span>
+    {% endif %}
+  </div>
+</nav>
+{% endif %}

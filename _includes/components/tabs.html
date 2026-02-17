@@ -1,0 +1,78 @@
+{% comment %}
+Tabs Component - Tabbed content sections
+
+Usage:
+  {% include components/tabs.html id="example" tabs="Tab 1,Tab 2,Tab 3" %}
+  <div data-tab-content="example-0">Content for Tab 1</div>
+  <div data-tab-content="example-1">Content for Tab 2</div>
+  <div data-tab-content="example-2">Content for Tab 3</div>
+  {% include components/tabs.html id="example" end=true %}
+
+Or with HTML in tabs array from front matter:
+  tabs:
+    - label: "npm"
+      content: "npm install package"
+    - label: "yarn"
+      content: "yarn add package"
+{% endcomment %}
+
+{% if include.end %}
+</div>
+<script>
+(function() {
+  const container = document.querySelector('[data-tabs="{{ include.id }}"]');
+  if (!container) return;
+
+  const buttons = container.querySelectorAll('[data-tab]');
+  const contents = document.querySelectorAll('[data-tab-content^="{{ include.id }}-"]');
+
+  // Show first tab by default
+  if (contents.length > 0) {
+    contents[0].style.display = 'block';
+  }
+
+  buttons.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+      // Update buttons
+      buttons.forEach(b => {
+        b.classList.remove('tab-active', 'text-primary-600', 'dark:text-primary-400', 'border-primary-600', 'dark:border-primary-400');
+        b.classList.add('text-slate-500', 'dark:text-slate-400', 'border-transparent', 'hover:text-slate-700', 'dark:hover:text-slate-300');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('tab-active', 'text-primary-600', 'dark:text-primary-400', 'border-primary-600', 'dark:border-primary-400');
+      btn.classList.remove('text-slate-500', 'dark:text-slate-400', 'border-transparent', 'hover:text-slate-700', 'dark:hover:text-slate-300');
+      btn.setAttribute('aria-selected', 'true');
+
+      // Update content
+      contents.forEach((c, i) => {
+        c.style.display = i === index ? 'block' : 'none';
+      });
+    });
+  });
+})();
+</script>
+{% else %}
+
+{% assign tab_labels = include.tabs | split: "," %}
+{% assign tab_id = include.id | default: "tabs" %}
+{% assign tab_style = include.style | default: "underline" %}
+
+<div class="tabs-container my-6" data-tabs="{{ tab_id }}">
+  <!-- Tab buttons -->
+  <div class="tabs-header flex {% if tab_style == 'pills' %}gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg{% else %}border-b border-slate-200 dark:border-slate-700{% endif %}" role="tablist">
+    {% for label in tab_labels %}
+    {% assign label_stripped = label | strip %}
+    <button type="button"
+            data-tab="{{ tab_id }}-{{ forloop.index0 }}"
+            role="tab"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-controls="panel-{{ tab_id }}-{{ forloop.index0 }}"
+            class="{% if tab_style == 'pills' %}px-4 py-2 text-sm font-medium rounded-md transition-all {% if forloop.first %}bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm{% else %}text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300{% endif %}{% else %}px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-all {% if forloop.first %}tab-active text-primary-600 dark:text-primary-400 border-primary-600 dark:border-primary-400{% else %}text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600{% endif %}{% endif %}">
+      {{ label_stripped }}
+    </button>
+    {% endfor %}
+  </div>
+
+  <!-- Tab content wrapper -->
+  <div class="tabs-content mt-4">
+{% endif %}

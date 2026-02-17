@@ -1,0 +1,79 @@
+{% comment %}
+Version Selector Component - Dropdown for switching documentation versions
+
+Usage:
+  {% include components/version-selector.html %}
+
+Requires _data/versions.yml with:
+  current: "2.0"
+  versions:
+    - number: "2.0"
+      name: "v2.0 (Latest)"
+      path: "/docs/"
+      latest: true
+{% endcomment %}
+
+{% if site.data.versions.versions.size > 1 %}
+{% assign current_version = page.version | default: site.data.versions.current %}
+{% assign versions = site.data.versions.versions %}
+
+<div class="version-selector relative inline-block">
+  <button type="button"
+          id="version-dropdown-btn"
+          class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+          aria-expanded="false"
+          aria-haspopup="true">
+    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+    </svg>
+    <span id="version-current">v{{ current_version }}</span>
+    <svg class="w-4 h-4 text-slate-400 transition-transform" id="version-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+    </svg>
+  </button>
+
+  <div id="version-dropdown"
+       class="hidden absolute left-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden z-50"
+       role="menu">
+    <div class="py-1">
+      {% for version in versions %}
+      <a href="{{ version.path | relative_url }}"
+         class="flex items-center justify-between px-4 py-2 text-sm {% if version.number == current_version %}text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20{% else %}text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50{% endif %} transition-colors"
+         role="menuitem">
+        <span>{{ version.name }}</span>
+        {% if version.number == current_version %}
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+        </svg>
+        {% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const btn = document.getElementById('version-dropdown-btn');
+  const dropdown = document.getElementById('version-dropdown');
+  const chevron = document.getElementById('version-chevron');
+
+  if (!btn || !dropdown) return;
+
+  btn.addEventListener('click', () => {
+    const isOpen = dropdown.classList.toggle('hidden');
+    btn.setAttribute('aria-expanded', !isOpen);
+    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.add('hidden');
+      btn.setAttribute('aria-expanded', 'false');
+      chevron.style.transform = '';
+    }
+  });
+})();
+</script>
+{% endif %}

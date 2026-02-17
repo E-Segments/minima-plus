@@ -1,0 +1,47 @@
+{% comment %}
+Badge Component - Universal badge include for Shields.io and Badgen.net
+
+Parameters:
+  service     - shields (default) or badgen
+  type        - Dynamic badge type (e.g., github/v/release)
+  repo        - GitHub repo for GitHub badges
+  label       - Static badge label
+  message     - Static badge message
+  color       - Badge color
+  style       - Badge style: flat, flat-square, plastic, for-the-badge, social
+  logo        - Logo name from Simple Icons
+  logoColor   - Logo color
+  link        - Optional link wrapper
+  alt         - Alt text for accessibility
+{% endcomment %}
+
+{%- assign badge_service = include.service | default: "shields" -%}
+{%- assign badge_style = include.style | default: "flat" -%}
+{%- assign badge_color = include.color | default: "blue" -%}
+{%- assign badge_alt = include.alt | default: include.label | default: "badge" -%}
+
+{%- capture badge_url -%}
+{%- if badge_service == "badgen" -%}
+  {%- if include.type -%}
+    https://badgen.net/{{ include.type }}{% if include.package %}/{{ include.package }}{% endif %}{% if include.repo %}/{{ include.repo }}{% endif %}
+  {%- else -%}
+    https://badgen.net/badge/{{ include.label | url_encode }}/{{ include.message | url_encode }}/{{ badge_color }}
+  {%- endif -%}
+{%- else -%}
+  {%- if include.type -%}
+    https://img.shields.io/{{ include.type }}{% if include.repo %}/{{ include.repo }}{% endif %}{% if include.package %}/{{ include.package }}{% endif %}?style={{ badge_style }}{% if include.color %}&color={{ include.color }}{% endif %}{% if include.logo %}&logo={{ include.logo }}{% if include.logoColor %}&logoColor={{ include.logoColor }}{% endif %}{% endif %}{% if include.label %}&label={{ include.label | url_encode }}{% endif %}
+  {%- else -%}
+    https://img.shields.io/badge/{{ include.label | url_encode }}-{{ include.message | url_encode }}-{{ badge_color }}?style={{ badge_style }}{% if include.logo %}&logo={{ include.logo }}{% if include.logoColor %}&logoColor={{ include.logoColor }}{% endif %}{% endif %}
+  {%- endif -%}
+{%- endif -%}
+{%- endcapture -%}
+
+{%- assign badge_url = badge_url | strip -%}
+
+{%- if include.link -%}
+<a href="{{ include.link }}" class="inline-block" target="_blank" rel="noopener noreferrer">
+  <img src="{{ badge_url }}" alt="{{ badge_alt }}" loading="lazy" class="inline-block align-middle">
+</a>
+{%- else -%}
+<img src="{{ badge_url }}" alt="{{ badge_alt }}" loading="lazy" class="inline-block align-middle">
+{%- endif -%}

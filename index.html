@@ -7,18 +7,28 @@ title: Home
 <section class="relative py-20 md:py-32 overflow-hidden">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center">
+      <!-- Badges -->
+      <div class="mb-8 flex flex-wrap items-center justify-center gap-2">
+        {% include components/badge-group.html badges=site.data.badges.theme %}
+      </div>
+
       <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white font-heading leading-tight">
         Build something
         <span class="text-primary-600 dark:text-primary-400">amazing</span>
         today
       </h1>
       <p class="mt-6 text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-        A modern Jekyll theme with Tailwind CSS. Beautiful, responsive, and fully configurable. Perfect for blogs, documentation, and landing pages.
+        A modern Jekyll theme with Tailwind CSS. Beautiful, responsive, and fully configurable. Now with search, pagination, and changelog.
       </p>
       <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
         {% include components/button.html text="Get Started" link="/docs/getting-started/" style="primary" size="lg" %}
-        {% include components/button.html text="View on GitHub" link="https://github.com" style="outline" size="lg" %}
+        {% include components/button.html text="View Changelog" link="/changelog/" style="outline" size="lg" %}
       </div>
+
+      <!-- Search hint -->
+      <p class="mt-6 text-sm text-slate-500 dark:text-slate-400">
+        Press <kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded text-xs font-mono">Cmd+K</kbd> to search
+      </p>
     </div>
   </div>
 
@@ -42,9 +52,21 @@ title: Home
 
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
       {% include components/card.html
-         title="Tailwind CSS v4"
-         description="Built with the latest Tailwind CSS for rapid styling and dark mode support."
-         icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>'
+         title="Search (Cmd+K)"
+         description="Full-text search powered by Lunr.js. Search posts, docs, and pages instantly."
+         icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>'
+      %}
+
+      {% include components/card.html
+         title="Pagination"
+         description="Built-in pagination for blog posts with customizable posts per page."
+         icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>'
+      %}
+
+      {% include components/card.html
+         title="Changelog"
+         description="Auto-fetch releases from GitHub with search, filtering, and markdown support."
+         icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>'
       %}
 
       {% include components/card.html
@@ -54,14 +76,20 @@ title: Home
       %}
 
       {% include components/card.html
-         title="Fully Configurable"
-         description="Customize colors, fonts, layouts, and features through a simple YAML config."
-         icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>'
+         title="Badges"
+         description="Easy Shields.io badge integration for versions, build status, and more."
+         icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>'
+      %}
+
+      {% include components/card.html
+         title="Tailwind CSS v4"
+         description="Built with the latest Tailwind CSS for rapid styling and dark mode support."
+         icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>'
       %}
 
       {% include components/card.html
          title="Blog Ready"
-         description="Complete blog support with categories, tags, reading time, and more."
+         description="Complete blog support with categories, tags, reading time, and pagination."
          icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>'
       %}
 
@@ -74,14 +102,34 @@ title: Home
       {% include components/card.html
          title="SEO Optimized"
          description="Built-in SEO with Open Graph, Twitter Cards, and structured data."
-         icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>'
+         icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>'
       %}
     </div>
   </div>
 </section>
 
-<!-- CTA Section -->
+<!-- Stats Section -->
 <section class="py-20">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white font-heading">
+        Trusted by developers
+      </h2>
+      <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">
+        Join thousands of developers building with Minima+
+      </p>
+    </div>
+
+    {% include components/stats-counter.html
+       stats="10K+:Downloads,500+:GitHub Stars,50+:Contributors,99%:Satisfaction"
+       style="cards"
+       columns=4
+    %}
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-slate-50 dark:bg-slate-900/50">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white font-heading">
       Ready to get started?
@@ -89,8 +137,9 @@ title: Home
     <p class="mt-4 text-xl text-slate-600 dark:text-slate-400">
       Check out the documentation to learn how to customize this theme.
     </p>
-    <div class="mt-8">
+    <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
       {% include components/button.html text="Read the Docs" link="/docs/getting-started/" style="primary" size="lg" %}
+      {% include components/button.html text="View Changelog" link="/changelog/" style="outline" size="lg" %}
     </div>
   </div>
 </section>

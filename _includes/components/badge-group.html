@@ -1,0 +1,66 @@
+{% comment %}
+Badge Group Component - Renders multiple badges from data
+
+Usage:
+  {% include components/badge-group.html badges=site.data.badges %}
+  {% include components/badge-group.html badges=page.badges %}
+
+Or inline:
+  {% include components/badge-group.html badges="jekyll,tailwind,github" preset=true %}
+
+Badge data structure (in _data/badges.yml or page front matter):
+  - type: "github/v/release"
+    repo: "owner/repo"
+    style: "for-the-badge"
+
+  - label: "Jekyll"
+    message: "4.3+"
+    color: "CC0000"
+    logo: "jekyll"
+    style: "for-the-badge"
+{% endcomment %}
+
+{%- assign gap_class = include.gap | default: "gap-2" -%}
+{%- assign align_class = include.align | default: "flex-wrap" -%}
+
+<div class="badge-group flex items-center {{ gap_class }} {{ align_class }}">
+  {%- if include.preset -%}
+    {%- comment %} Preset badges by name {% endcomment -%}
+    {%- assign preset_names = include.badges | split: "," -%}
+    {%- for name in preset_names -%}
+      {%- assign name = name | strip | downcase -%}
+      {%- case name -%}
+        {%- when "jekyll" -%}
+          {% include components/badge.html label="Jekyll" message="4.3+" color="CC0000" logo="jekyll" logoColor="white" style="for-the-badge" %}
+        {%- when "tailwind" -%}
+          {% include components/badge.html label="Tailwind CSS" message="v4" color="06B6D4" logo="tailwindcss" logoColor="white" style="for-the-badge" %}
+        {%- when "github" -%}
+          {% include components/badge.html type="github/stars" repo=site.github_repo style="for-the-badge" logo="github" %}
+        {%- when "license" -%}
+          {% include components/badge.html type="github/license" repo=site.github_repo style="for-the-badge" %}
+        {%- when "release" -%}
+          {% include components/badge.html type="github/v/release" repo=site.github_repo style="for-the-badge" %}
+        {%- when "mit" -%}
+          {% include components/badge.html label="License" message="MIT" color="green" style="for-the-badge" %}
+      {%- endcase -%}
+    {%- endfor -%}
+  {%- else -%}
+    {%- comment %} Render from badges array {% endcomment -%}
+    {%- for badge in include.badges -%}
+      {% include components/badge.html
+         service=badge.service
+         type=badge.type
+         repo=badge.repo
+         package=badge.package
+         label=badge.label
+         message=badge.message
+         color=badge.color
+         style=badge.style
+         logo=badge.logo
+         logoColor=badge.logoColor
+         link=badge.link
+         alt=badge.alt
+      %}
+    {%- endfor -%}
+  {%- endif -%}
+</div>

@@ -8,6 +8,7 @@ group :jekyll_plugins do
   gem "jekyll-seo-tag", "~> 2.8"
   gem "jekyll-sitemap", "~> 1.4"
   gem "jekyll-remote-theme", "~> 0.4"
+  gem "jekyll-paginate-v2", "~> 3.0"
 end
 
 # Windows and JRuby compatibility

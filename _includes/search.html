@@ -1,0 +1,471 @@
+{% comment %}
+Search Modal Component with Lunr.js
+
+Features:
+- Keyboard shortcut: Cmd/Ctrl + K to open
+- Type filter tabs: All | Posts | Docs
+- Keyboard navigation (up/down arrows, enter)
+- Highlighted matches
+- Recent searches (localStorage)
+{% endcomment %}
+
+<!-- Search Modal -->
+<div id="search-modal" class="search-modal hidden fixed inset-0 z-[100]" role="dialog" aria-modal="true" aria-labelledby="search-title">
+  <!-- Backdrop -->
+  <div class="search-backdrop absolute inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm" aria-hidden="true"></div>
+
+  <!-- Modal Container -->
+  <div class="search-container relative flex items-start justify-center min-h-screen pt-[10vh] px-4">
+    <div class="search-panel w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl shadow-slate-900/20 dark:shadow-slate-950/50 border border-slate-200 dark:border-slate-800 overflow-hidden transform transition-all">
+      <!-- Search Header -->
+      <div class="search-header flex items-center border-b border-slate-200 dark:border-slate-800 px-4">
+        <svg class="search-icon w-5 h-5 text-slate-400 dark:text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input type="text"
+               id="search-input"
+               class="search-input flex-1 px-4 py-4 bg-transparent border-0 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0 text-base"
+               placeholder="Search posts, docs, and more..."
+               autocomplete="off"
+               spellcheck="false">
+        <button type="button"
+                id="search-close"
+                class="search-close p-2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
+                aria-label="Close search">
+          <kbd class="hidden sm:inline-flex items-center px-2 py-1 text-xs font-medium text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 rounded">ESC</kbd>
+          <svg class="sm:hidden w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="search-filters flex items-center gap-1 px-4 py-2 border-b border-slate-100 dark:border-slate-800/50 bg-slate-50 dark:bg-slate-800/30">
+        <button type="button" class="search-filter active px-3 py-1.5 text-sm font-medium rounded-lg transition-colors" data-filter="all">
+          All
+        </button>
+        <button type="button" class="search-filter px-3 py-1.5 text-sm font-medium rounded-lg transition-colors" data-filter="post">
+          Posts
+        </button>
+        <button type="button" class="search-filter px-3 py-1.5 text-sm font-medium rounded-lg transition-colors" data-filter="doc">
+          Docs
+        </button>
+      </div>
+
+      <!-- Search Results -->
+      <div id="search-results" class="search-results overflow-y-auto max-h-[60vh]">
+        <!-- Recent searches (shown when input is empty) -->
+        <div id="search-recent" class="search-recent p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Recent Searches</h3>
+            <button type="button" id="clear-recent" class="text-xs text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors">Clear</button>
+          </div>
+          <ul id="recent-list" class="space-y-1"></ul>
+        </div>
+
+        <!-- Results list -->
+        <ul id="results-list" class="search-results-list hidden divide-y divide-slate-100 dark:divide-slate-800"></ul>
+
+        <!-- No results -->
+        <div id="search-no-results" class="search-no-results hidden p-8 text-center">
+          <svg class="w-12 h-12 mx-auto text-slate-300 dark:text-slate-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <p class="text-slate-500 dark:text-slate-400 font-medium">No results found</p>
+          <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">Try a different search term</p>
+        </div>
+
+        <!-- Loading -->
+        <div id="search-loading" class="search-loading hidden p-8 text-center">
+          <svg class="w-8 h-8 mx-auto text-primary-500 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p class="text-sm text-slate-400 dark:text-slate-500 mt-3">Loading search index...</p>
+        </div>
+      </div>
+
+      <!-- Search Footer -->
+      <div class="search-footer flex items-center justify-between px-4 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 text-xs text-slate-400 dark:text-slate-500">
+        <div class="flex items-center gap-4">
+          <span class="hidden sm:flex items-center gap-1">
+            <kbd class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-[10px]">&uarr;</kbd>
+            <kbd class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-[10px]">&darr;</kbd>
+            to navigate
+          </span>
+          <span class="hidden sm:flex items-center gap-1">
+            <kbd class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-[10px]">&crarr;</kbd>
+            to select
+          </span>
+        </div>
+        <span>Powered by Lunr.js</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lunr.js CDN -->
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+<script>
+(function() {
+  // DOM elements
+  const modal = document.getElementById('search-modal');
+  const input = document.getElementById('search-input');
+  const closeBtn = document.getElementById('search-close');
+  const backdrop = modal.querySelector('.search-backdrop');
+  const resultsList = document.getElementById('results-list');
+  const recentSection = document.getElementById('search-recent');
+  const recentList = document.getElementById('recent-list');
+  const clearRecentBtn = document.getElementById('clear-recent');
+  const noResults = document.getElementById('search-no-results');
+  const loading = document.getElementById('search-loading');
+  const filters = modal.querySelectorAll('.search-filter');
+
+  // State
+  let searchIndex = null;
+  let searchData = [];
+  let currentFilter = 'all';
+  let selectedIndex = -1;
+  let recentSearches = [];
+
+  // Load recent searches from localStorage
+  function loadRecentSearches() {
+    try {
+      const stored = localStorage.getItem('search-recent');
+      recentSearches = stored ? JSON.parse(stored) : [];
+    } catch (e) {
+      recentSearches = [];
+    }
+    renderRecentSearches();
+  }
+
+  // Save recent searches
+  function saveRecentSearches() {
+    try {
+      localStorage.setItem('search-recent', JSON.stringify(recentSearches.slice(0, 5)));
+    } catch (e) {}
+  }
+
+  // Add to recent searches
+  function addToRecent(query) {
+    if (!query.trim()) return;
+    recentSearches = [query, ...recentSearches.filter(q => q !== query)].slice(0, 5);
+    saveRecentSearches();
+  }
+
+  // Render recent searches
+  function renderRecentSearches() {
+    if (recentSearches.length === 0) {
+      recentSection.classList.add('hidden');
+      return;
+    }
+
+    recentSection.classList.remove('hidden');
+    recentList.innerHTML = recentSearches.map(query => `
+      <li>
+        <button type="button" class="recent-item w-full flex items-center gap-3 px-3 py-2 text-left text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+          <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="truncate">${escapeHtml(query)}</span>
+        </button>
+      </li>
+    `).join('');
+
+    // Add click handlers
+    recentList.querySelectorAll('.recent-item').forEach((item, i) => {
+      item.addEventListener('click', () => {
+        input.value = recentSearches[i];
+        performSearch(recentSearches[i]);
+      });
+    });
+  }
+
+  // Clear recent searches
+  function clearRecentSearches() {
+    recentSearches = [];
+    saveRecentSearches();
+    renderRecentSearches();
+  }
+
+  // Load search index
+  async function loadSearchIndex() {
+    if (searchIndex) return;
+
+    loading.classList.remove('hidden');
+    recentSection.classList.add('hidden');
+
+    try {
+      const response = await fetch('{{ "/assets/search.json" | relative_url }}');
+      searchData = await response.json();
+
+      searchIndex = lunr(function() {
+        this.ref('url');
+        this.field('title', { boost: 10 });
+        this.field('content');
+        this.field('excerpt', { boost: 5 });
+        this.field('categories', { boost: 3 });
+        this.field('tags', { boost: 3 });
+
+        searchData.forEach(doc => {
+          this.add({
+            url: doc.url,
+            title: doc.title,
+            content: doc.content,
+            excerpt: doc.excerpt,
+            categories: doc.categories ? doc.categories.join(' ') : '',
+            tags: doc.tags ? doc.tags.join(' ') : ''
+          });
+        });
+      });
+
+      loading.classList.add('hidden');
+      if (!input.value) {
+        renderRecentSearches();
+      }
+    } catch (error) {
+      console.error('Failed to load search index:', error);
+      loading.innerHTML = '<p class="text-red-500">Failed to load search index</p>';
+    }
+  }
+
+  // Perform search
+  function performSearch(query) {
+    if (!searchIndex || !query.trim()) {
+      resultsList.classList.add('hidden');
+      noResults.classList.add('hidden');
+      renderRecentSearches();
+      return;
+    }
+
+    recentSection.classList.add('hidden');
+    selectedIndex = -1;
+
+    // Search with wildcard
+    let results;
+    try {
+      results = searchIndex.search(query + '*');
+    } catch (e) {
+      results = searchIndex.search(query);
+    }
+
+    // Map results to data
+    let items = results.map(result => {
+      const doc = searchData.find(d => d.url === result.ref);
+      return doc ? { ...doc, score: result.score } : null;
+    }).filter(Boolean);
+
+    // Apply filter
+    if (currentFilter !== 'all') {
+      items = items.filter(item => item.type === currentFilter);
+    }
+
+    if (items.length === 0) {
+      resultsList.classList.add('hidden');
+      noResults.classList.remove('hidden');
+      return;
+    }
+
+    noResults.classList.add('hidden');
+    resultsList.classList.remove('hidden');
+
+    // Render results
+    resultsList.innerHTML = items.slice(0, 10).map((item, index) => `
+      <li>
+        <a href="${item.url}" class="search-result flex items-start gap-4 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${index === 0 ? 'search-result-selected' : ''}" data-index="${index}">
+          <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg ${getTypeStyles(item.type)}">
+            ${getTypeIcon(item.type)}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="font-medium text-slate-900 dark:text-white truncate">${highlightMatch(item.title, query)}</span>
+              <span class="flex-shrink-0 px-2 py-0.5 text-xs font-medium rounded ${getTypeBadgeStyles(item.type)}">${item.type}</span>
+            </div>
+            <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400 line-clamp-1">${highlightMatch(item.excerpt || '', query)}</p>
+            ${item.date ? `<time class="mt-1 text-xs text-slate-400 dark:text-slate-500">${formatDate(item.date)}</time>` : ''}
+          </div>
+          <svg class="flex-shrink-0 w-5 h-5 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </li>
+    `).join('');
+
+    // Update selected state
+    updateSelectedResult();
+  }
+
+  // Helper functions
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function highlightMatch(text, query) {
+    if (!text || !query) return escapeHtml(text || '');
+    const escaped = escapeHtml(text);
+    const regex = new RegExp(`(${escapeHtml(query)})`, 'gi');
+    return escaped.replace(regex, '<mark class="bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 rounded px-0.5">$1</mark>');
+  }
+
+  function getTypeStyles(type) {
+    switch (type) {
+      case 'post': return 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400';
+      case 'doc': return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400';
+      default: return 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400';
+    }
+  }
+
+  function getTypeBadgeStyles(type) {
+    switch (type) {
+      case 'post': return 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400';
+      case 'doc': return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400';
+      default: return 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400';
+    }
+  }
+
+  function getTypeIcon(type) {
+    switch (type) {
+      case 'post':
+        return '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>';
+      case 'doc':
+        return '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>';
+      default:
+        return '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>';
+    }
+  }
+
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  // Keyboard navigation
+  function updateSelectedResult() {
+    const results = resultsList.querySelectorAll('.search-result');
+    results.forEach((result, index) => {
+      if (index === selectedIndex) {
+        result.classList.add('search-result-selected', 'bg-slate-50', 'dark:bg-slate-800/50');
+        result.scrollIntoView({ block: 'nearest' });
+      } else {
+        result.classList.remove('search-result-selected', 'bg-slate-50', 'dark:bg-slate-800/50');
+      }
+    });
+  }
+
+  function navigateResults(direction) {
+    const results = resultsList.querySelectorAll('.search-result');
+    if (results.length === 0) return;
+
+    if (direction === 'down') {
+      selectedIndex = Math.min(selectedIndex + 1, results.length - 1);
+    } else {
+      selectedIndex = Math.max(selectedIndex - 1, 0);
+    }
+
+    updateSelectedResult();
+  }
+
+  function selectResult() {
+    const results = resultsList.querySelectorAll('.search-result');
+    if (selectedIndex >= 0 && selectedIndex < results.length) {
+      addToRecent(input.value);
+      results[selectedIndex].click();
+    }
+  }
+
+  // Open modal
+  function openSearch() {
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    input.focus();
+    loadSearchIndex();
+    loadRecentSearches();
+  }
+
+  // Close modal
+  function closeSearch() {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+    input.value = '';
+    resultsList.innerHTML = '';
+    resultsList.classList.add('hidden');
+    noResults.classList.add('hidden');
+    selectedIndex = -1;
+  }
+
+  // Event listeners
+  // Keyboard shortcut (Cmd/Ctrl + K)
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      if (modal.classList.contains('hidden')) {
+        openSearch();
+      } else {
+        closeSearch();
+      }
+    }
+
+    // Arrow navigation and Enter
+    if (!modal.classList.contains('hidden')) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        navigateResults('down');
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        navigateResults('up');
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        selectResult();
+      } else if (e.key === 'Escape') {
+        closeSearch();
+      }
+    }
+  });
+
+  // Search trigger buttons
+  document.querySelectorAll('[data-search-trigger]').forEach(btn => {
+    btn.addEventListener('click', openSearch);
+  });
+
+  // Close button
+  closeBtn.addEventListener('click', closeSearch);
+
+  // Backdrop click
+  backdrop.addEventListener('click', closeSearch);
+
+  // Input handler with debounce
+  let debounceTimer;
+  input.addEventListener('input', (e) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      performSearch(e.target.value);
+    }, 150);
+  });
+
+  // Filter tabs
+  filters.forEach(filter => {
+    filter.addEventListener('click', () => {
+      filters.forEach(f => f.classList.remove('active'));
+      filter.classList.add('active');
+      currentFilter = filter.dataset.filter;
+      if (input.value) {
+        performSearch(input.value);
+      }
+    });
+  });
+
+  // Clear recent
+  clearRecentBtn.addEventListener('click', clearRecentSearches);
+
+  // Result click - save to recent
+  resultsList.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (link) {
+      addToRecent(input.value);
+    }
+  });
+})();
+</script>

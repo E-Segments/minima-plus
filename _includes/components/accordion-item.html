@@ -1,0 +1,28 @@
+{% comment %}
+Accordion Item Component - Individual accordion panel
+
+Usage:
+  {% include components/accordion-item.html title="Question" open=false %}
+  Your answer content here with **markdown** support.
+  {% include components/accordion-item.html end=true %}
+{% endcomment %}
+
+{% if include.end %}
+      </div>
+    </div>
+  </div>
+{% else %}
+  {% assign item_open = include.open | default: false %}
+  <div class="accordion-item">
+    <button type="button"
+            class="accordion-trigger w-full flex items-center justify-between px-5 py-4 text-left bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+            aria-expanded="{{ item_open }}"
+            onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); this.querySelector('.accordion-icon').style.transform = this.getAttribute('aria-expanded') === 'true' ? 'rotate(180deg)' : ''; this.nextElementSibling.classList.toggle('hidden');">
+      <span class="font-medium text-slate-900 dark:text-white">{{ include.title }}</span>
+      <svg class="accordion-icon w-5 h-5 text-slate-400 dark:text-slate-500 transition-transform duration-200 {% if item_open %}rotate-180{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </button>
+    <div class="accordion-panel {% unless item_open %}hidden{% endunless %}" role="region">
+      <div class="px-5 pb-5 pt-0 text-slate-600 dark:text-slate-400 prose dark:prose-invert max-w-none">
+{% endif %}

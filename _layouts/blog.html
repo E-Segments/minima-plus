@@ -20,7 +20,13 @@ layout: default
 
     <!-- Posts Grid -->
     <div class="grid gap-6 lg:gap-8 sm:grid-cols-2 lg:grid-cols-3">
-      {% assign posts = site.posts %}
+      {% comment %} Use paginator if available, otherwise fall back to site.posts {% endcomment %}
+      {% if paginator.posts %}
+        {% assign posts = paginator.posts %}
+      {% else %}
+        {% assign posts = site.posts %}
+      {% endif %}
+
       {% for post in posts %}
       <article class="group flex flex-col bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50 hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300">
         {% if post.image %}
@@ -96,6 +102,11 @@ layout: default
       <h2 class="text-xl font-semibold text-slate-900 dark:text-white mb-2">No posts yet</h2>
       <p class="text-slate-600 dark:text-slate-400">Check back soon for new content!</p>
     </div>
+    {% endif %}
+
+    <!-- Pagination -->
+    {% if paginator %}
+    {% include pagination.html paginator=paginator %}
     {% endif %}
   </div>
 </section>

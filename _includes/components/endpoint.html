@@ -1,0 +1,126 @@
+{% comment %}
+API Endpoint Component - Document REST API endpoints
+
+Usage:
+  {% include components/endpoint.html
+     method="GET"
+     path="/api/users/:id"
+     description="Retrieve a user by ID"
+  %}
+
+Parameters (in front matter or data file):
+  method      - HTTP method: GET, POST, PUT, PATCH, DELETE
+  path        - Endpoint path with :params
+  description - Brief description
+  auth        - "required", "optional", or false
+  deprecated  - true/false
+  params      - Array of path/query parameters
+  body        - Request body schema
+  responses   - Array of response examples
+{% endcomment %}
+
+{% assign method = include.method | upcase %}
+{% assign method_colors = "GET:emerald,POST:blue,PUT:amber,PATCH:purple,DELETE:red" | split: "," %}
+{% assign method_color = "slate" %}
+{% for mc in method_colors %}
+  {% assign parts = mc | split: ":" %}
+  {% if parts[0] == method %}
+    {% assign method_color = parts[1] %}
+  {% endif %}
+{% endfor %}
+
+<div class="endpoint-card my-6 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-900">
+  <!-- Header -->
+  <div class="endpoint-header flex flex-wrap items-center gap-3 px-5 py-4 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+    <span class="method-badge inline-flex items-center px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-{{ method_color }}-100 dark:bg-{{ method_color }}-900/30 text-{{ method_color }}-700 dark:text-{{ method_color }}-400">
+      {{ method }}
+    </span>
+    <code class="endpoint-path text-sm font-mono text-slate-700 dark:text-slate-300">{{ include.path }}</code>
+    {% if include.auth == "required" %}
+    <span class="auth-badge inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+      </svg>
+      Auth Required
+    </span>
+    {% endif %}
+    {% if include.deprecated %}
+    <span class="deprecated-badge inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
+      Deprecated
+    </span>
+    {% endif %}
+  </div>
+
+  <!-- Description -->
+  {% if include.description %}
+  <div class="endpoint-description px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+    <p class="text-slate-600 dark:text-slate-400">{{ include.description }}</p>
+  </div>
+  {% endif %}
+
+  <!-- Parameters -->
+  {% if include.params %}
+  <div class="endpoint-params px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+    <h4 class="text-sm font-semibold text-slate-900 dark:text-white mb-3">Parameters</h4>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <th class="pb-2 pr-4">Name</th>
+            <th class="pb-2 pr-4">Type</th>
+            <th class="pb-2 pr-4">In</th>
+            <th class="pb-2">Description</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+          {% for param in include.params %}
+          <tr>
+            <td class="py-2 pr-4">
+              <code class="text-sm font-mono text-slate-900 dark:text-white">{{ param.name }}</code>
+              {% if param.required %}<span class="text-red-500">*</span>{% endif %}
+            </td>
+            <td class="py-2 pr-4">
+              <code class="text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">{{ param.type | default: "string" }}</code>
+            </td>
+            <td class="py-2 pr-4">
+              <span class="text-xs text-slate-500 dark:text-slate-400">{{ param.in | default: "query" }}</span>
+            </td>
+            <td class="py-2 text-slate-600 dark:text-slate-400">{{ param.description }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Request Body -->
+  {% if include.body %}
+  <div class="endpoint-body px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+    <h4 class="text-sm font-semibold text-slate-900 dark:text-white mb-3">Request Body</h4>
+    <pre class="!my-0 text-sm"><code class="language-json">{{ include.body | jsonify }}</code></pre>
+  </div>
+  {% endif %}
+
+  <!-- Responses -->
+  {% if include.responses %}
+  <div class="endpoint-responses px-5 py-4">
+    <h4 class="text-sm font-semibold text-slate-900 dark:text-white mb-3">Responses</h4>
+    <div class="space-y-3">
+      {% for response in include.responses %}
+      <div class="response-item">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium {% if response.status < 300 %}bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400{% elsif response.status < 400 %}bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400{% else %}bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400{% endif %}">
+            {{ response.status }}
+          </span>
+          <span class="text-sm text-slate-600 dark:text-slate-400">{{ response.description }}</span>
+        </div>
+        {% if response.body %}
+        <pre class="!my-0 text-sm"><code class="language-json">{{ response.body | jsonify }}</code></pre>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>

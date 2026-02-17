@@ -1,0 +1,22 @@
+# Documentation Versions
+# Configure multiple versions of your documentation
+
+# Current/latest version
+current: "2.0"
+
+# All available versions (newest first)
+versions:
+  - number: "2.0"
+    name: "v2.0 (Latest)"
+    path: "/docs/"
+    latest: true
+
+  - number: "1.0"
+    name: "v1.0"
+    path: "/docs/v1/"
+    latest: false
+
+# Version warning messages
+warnings:
+  old_version: "You're viewing documentation for an older version."
+  latest_link: "View the latest version"

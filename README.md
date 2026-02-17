@@ -1,17 +1,17 @@
 <div align="center">
 
-# ✨ Minima+ ✨
+# Minima+
 
 ### A beautiful, minimal Jekyll theme powered by Tailwind CSS v4
 
-The next evolution of Jekyll's classic Minima theme — now with dark mode, modern design, and zero build steps.
+The next evolution of Jekyll's classic Minima theme — now with dark mode, search, pagination, and zero build steps.
 
 [![Jekyll](https://img.shields.io/badge/Jekyll-4.3+-CC0000?style=for-the-badge&logo=jekyll&logoColor=white)](https://jekyllrb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Ready-222?style=for-the-badge&logo=github&logoColor=white)](https://pages.github.com/)
 
-[**🌐 Live Demo**](https://e-segments.github.io/minima-plus/) • [**📖 Documentation**](https://e-segments.github.io/minima-plus/docs/) • [**🚀 Get Started**](#-quick-start)
+[**Live Demo**](https://e-segments.github.io/minima-plus/) | [**Documentation**](https://e-segments.github.io/minima-plus/docs/) | [**Changelog**](https://e-segments.github.io/minima-plus/changelog/)
 
 <br>
 
@@ -21,62 +21,75 @@ The next evolution of Jekyll's classic Minima theme — now with dark mode, mode
 
 ---
 
-## 🎯 Why Minima+?
+## Why Minima+?
 
 | Feature | Minima (Classic) | Minima+ |
 |---------|:----------------:|:-------:|
-| Dark Mode | ❌ | ✅ |
-| Tailwind CSS | ❌ | ✅ |
-| No Build Step | ✅ | ✅ |
-| Responsive | ⚠️ Basic | ✅ Full |
-| Blog + Docs | ⚠️ Blog only | ✅ Both |
-| Syntax Highlighting | ⚠️ Rouge | ✅ Prism.js |
-| Copy Code Button | ❌ | ✅ |
-| Table of Contents | ❌ | ✅ |
-| SEO Optimized | ⚠️ Basic | ✅ Full |
+| Dark Mode | - | Yes |
+| Tailwind CSS | - | Yes |
+| No Build Step | Yes | Yes |
+| Responsive | Basic | Full |
+| Blog + Docs | Blog only | Both |
+| **Search (Lunr.js)** | - | **Yes** |
+| **Pagination** | - | **Yes** |
+| **Changelog** | - | **Yes** |
+| **Badges** | - | **Yes** |
+| **Stats Counter** | - | **Yes** |
+| **404 Page** | Basic | **Animated** |
+| **Coming Soon** | - | **Yes** |
+| Syntax Highlighting | Rouge | Prism.js |
+| Copy Code Button | - | Yes |
+| Table of Contents | - | Yes |
+| SEO Optimized | Basic | Full |
 
 ---
 
-## ✨ Features
+## Features
 
 <table>
 <tr>
 <td width="50%">
 
-### 🎨 Design
-- 🌈 **16 Color Themes** — One line config change
-- 🌙 **Dark Mode** — Auto-detects system preference
-- 📱 **Fully Responsive** — Mobile-first design
-- ✏️ **Beautiful Typography** — Tailwind's prose classes
+### Design
+- **16 Color Themes** — One line config change
+- **Dark Mode** — Auto-detects system preference
+- **Fully Responsive** — Mobile-first design
+- **Beautiful Typography** — Tailwind's prose classes
+- **Animated 404** — Creative error page
+- **Coming Soon** — Pre-launch landing page
 
 </td>
 <td width="50%">
 
-### ⚡ Performance
-- 🚀 **No Build Step** — Tailwind via CDN
-- 📦 **Static Output** — Lightning fast
-- 🔍 **SEO Ready** — Meta tags, sitemap, Open Graph
-- ♿ **Accessible** — WCAG compliant
+### Performance
+- **No Build Step** — Tailwind via CDN
+- **Static Output** — Lightning fast
+- **SEO Ready** — Meta tags, sitemap, Open Graph
+- **Accessible** — WCAG compliant
 
 </td>
 </tr>
 <tr>
 <td width="50%">
 
-### 📝 Content
-- 📰 **Blog Ready** — Categories, tags, reading time
-- 📚 **Documentation** — Sidebar + table of contents
-- 🎯 **Components** — Cards, callouts, steps
-- 🖨️ **Code Blocks** — Prism.js + copy button
+### Content
+- **Blog Ready** — Categories, tags, reading time
+- **Documentation** — Sidebar + versioning
+- **API Reference** — REST endpoint docs
+- **CLI Reference** — Command documentation
+- **Search** — Lunr.js powered, Cmd+K shortcut
+- **Changelog** — Auto-fetch from GitHub releases
 
 </td>
 <td width="50%">
 
-### 🛠️ Developer Experience
-- ⚙️ **Configurable** — Everything in `_config.yml`
-- 🔌 **Remote Theme** — Use in existing repos
-- 🤖 **Auto Deploy** — GitHub Actions included
-- 📄 **MIT License** — Use anywhere, free forever
+### Developer Experience
+- **Configurable** — Everything in `_config.yml`
+- **Pagination** — For blog, docs, and releases
+- **Badges** — Shields.io integration
+- **Stats Counter** — Animated number counters
+- **Tabs & Accordions** — Interactive components
+- **Auto Deploy** — GitHub Actions included
 
 </td>
 </tr>
@@ -84,9 +97,9 @@ The next evolution of Jekyll's classic Minima theme — now with dark mode, mode
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
-### 🆕 Starting Fresh? Use the Template!
+### Starting Fresh? Use the Template!
 
 <a href="https://github.com/E-Segments/minima-plus/generate">
   <img src="https://img.shields.io/badge/Use_This_Template-238636?style=for-the-badge&logo=github&logoColor=white" alt="Use Template">
@@ -95,13 +108,11 @@ The next evolution of Jekyll's classic Minima theme — now with dark mode, mode
 1. Click **"Use this template"** above
 2. Name your repo `username.github.io` (for personal site) or any name
 3. Clone → Edit `_config.yml` → Push
-4. 🎉 Your site is live!
+4. Your site is live!
 
 ---
 
-### 📁 Adding Docs to Existing Repo? Use Remote Theme!
-
-Perfect for adding beautiful documentation to your code projects.
+### Adding to Existing Repo? Use Remote Theme!
 
 **Step 1:** Create `docs/_config.yml`:
 ```yaml
@@ -110,10 +121,13 @@ baseurl: "/your-repo-name"
 
 title: "My Project"
 description: "Documentation for my awesome project"
+github_repo: "username/repo"  # For changelog
 
 theme_config:
   colors:
-    primary: "emerald"  # 🎨 Pick your color!
+    primary: "emerald"
+  features:
+    search: true
 ```
 
 **Step 2:** Create `docs/Gemfile`:
@@ -121,198 +135,316 @@ theme_config:
 source "https://rubygems.org"
 gem "jekyll", "~> 4.3"
 gem "jekyll-remote-theme"
+gem "jekyll-paginate-v2"
 ```
 
-**Step 3:** Create `docs/index.md`:
-```markdown
----
-layout: landing
----
-
-# Welcome to My Project! 👋
-
-Your awesome landing page content here...
-```
-
-**Step 4:** Enable GitHub Pages:
+**Step 3:** Enable GitHub Pages:
 > **Settings** → **Pages** → **Branch:** `main` → **Folder:** `/docs`
 
-✅ Done! Your docs site will be at `https://username.github.io/your-repo/`
+**Step 4 (Optional):** Add 404 and Coming Soon pages:
+
+Create `docs/404.html`:
+```yaml
+---
+layout: 404
+title: "Page not found"
+permalink: /404.html
+---
+```
+
+Create `docs/coming-soon.html` (for pre-launch):
+```yaml
+---
+layout: coming-soon
+title: "Coming Soon"
+headline: "Something Amazing is Coming"
+launch_date: "2025-06-01T00:00:00"
+permalink: /coming-soon/
+---
+```
+
+<div class="callout callout-info">
+  <strong>Note:</strong> When using <code>remote_theme</code>, layouts like <code>404</code>, <code>coming-soon</code>, <code>api</code>, and <code>cli</code> are automatically available from the theme.
+</div>
 
 ---
 
-## 🎨 Color Themes
+## New Features
+
+### Search (Cmd+K)
+
+Full-text search across posts, docs, and pages powered by Lunr.js.
+
+- Press `Cmd+K` (Mac) or `Ctrl+K` (Windows/Linux) to open
+- Filter by content type (All / Posts / Docs)
+- Keyboard navigation with arrow keys
+- Recent searches saved locally
+
+Enable in `_config.yml`:
+```yaml
+theme_config:
+  features:
+    search: true
+```
+
+### Pagination
+
+Built-in pagination for blog posts using jekyll-paginate-v2.
+
+- Configurable posts per page
+- Previous/Next navigation
+- Page numbers with ellipsis
+- "Showing X-Y of Z" counter
+
+Configure in `_config.yml`:
+```yaml
+pagination:
+  enabled: true
+  per_page: 6
+  permalink: '/page/:num/'
+```
+
+### Changelog
+
+Auto-fetch releases from GitHub API with search and filtering.
+
+- Pulls releases from your GitHub repo
+- Search and filter releases
+- Version badges and download links
+- Markdown release notes rendered
+
+Set your repo in `_config.yml`:
+```yaml
+github_repo: "username/repo"
+```
+
+Then create `changelog.md`:
+```yaml
+---
+layout: changelog
+title: Changelog
+permalink: /changelog/
+---
+```
+
+### Badges (Shields.io)
+
+Easy badge integration with Shields.io and Badgen.net.
+
+```liquid
+{% include components/badge.html
+   label="Jekyll"
+   message="4.3+"
+   color="CC0000"
+   logo="jekyll"
+   style="for-the-badge"
+%}
+
+{% include components/badge.html
+   type="github/v/release"
+   repo="E-Segments/minima-plus"
+   style="flat-square"
+%}
+```
+
+Or use badge groups from data:
+```liquid
+{% include components/badge-group.html badges=site.data.badges.theme %}
+```
+
+### Stats Counter
+
+Animated number counters that count up when scrolled into view.
+
+```liquid
+{% include components/stats-counter.html
+   stats="10K+:Downloads,500+:Stars,50+:Contributors,99%:Satisfaction"
+   style="cards"
+   columns=4
+%}
+```
+
+Or use data arrays:
+```yaml
+# In front matter
+stats:
+  - value: 10000
+    label: "Downloads"
+    suffix: "+"
+  - value: 99.9
+    label: "Uptime"
+    suffix: "%"
+    decimals: 1
+```
+
+Styles: `default`, `cards`, `minimal`
+
+### 404 Error Page
+
+Beautiful animated 404 page with:
+- Gradient animated "404" text
+- Floating particles background
+- Built-in search box
+- Auto-populated navigation suggestions
+- Rotating fun error messages
+
+**GitHub Pages automatically uses `404.html`** — no configuration needed!
+
+Customize in `404.html`:
+```yaml
+---
+layout: 404
+title: "Page not found"
+description: "Custom message here"
+---
+```
+
+### Coming Soon Page
+
+Pre-launch landing page with countdown timer and email capture.
+
+```yaml
+---
+layout: coming-soon
+title: "Coming Soon"
+headline: "Something Amazing is Coming"
+tagline: "Sign up to be notified!"
+launch_date: "2025-06-01T00:00:00"
+social:
+  - name: "Twitter"
+    icon: "twitter"
+    url: "https://twitter.com/handle"
+  - name: "GitHub"
+    icon: "github"
+    url: "https://github.com/repo"
+# form_action: "https://your-email-service.com/subscribe"
+---
+```
+
+Features:
+- Live countdown timer
+- Email signup form
+- Social links (Twitter, GitHub, LinkedIn, Instagram, Discord)
+- Animated glowing background
+- Mobile responsive
+
+**Pre-launch tip:** Rename `coming-soon.html` to `index.html` until launch!
+
+---
+
+## Color Themes
 
 Change your entire site's color scheme with one line:
 
 ```yaml
 theme_config:
   colors:
-    primary: "indigo"  # 👈 Change this!
+    primary: "indigo"  # Change this!
 ```
 
-<table>
-<tr>
-<td>🔴 <code>red</code></td>
-<td>🟠 <code>orange</code></td>
-<td>🟡 <code>amber</code></td>
-<td>🟢 <code>emerald</code></td>
-<td>🔵 <code>blue</code></td>
-<td>🟣 <code>violet</code></td>
-</tr>
-<tr>
-<td>💗 <code>pink</code></td>
-<td>🌹 <code>rose</code></td>
-<td>💜 <code>purple</code></td>
-<td>🩵 <code>cyan</code></td>
-<td>🌊 <code>teal</code></td>
-<td>💙 <code>indigo</code></td>
-</tr>
-</table>
-
-Plus: `slate`, `gray`, `zinc`, `neutral`, `stone`, `yellow`, `lime`, `green`, `sky`, `fuchsia`
+Available colors: `red`, `orange`, `amber`, `emerald`, `blue`, `violet`, `pink`, `rose`, `purple`, `cyan`, `teal`, `indigo`, `slate`, `gray`, `zinc`, `neutral`, `stone`, `yellow`, `lime`, `green`, `sky`, `fuchsia`
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-📦 your-site/
-├── 📄 _config.yml        # ⚙️ Site configuration
-├── 📁 _data/
-│   ├── 📄 navigation.yml # 🧭 Header menu
-│   ├── 📄 social.yml     # 🔗 Social links
-│   └── 📄 footer.yml     # 📋 Footer columns
-├── 📁 _docs/             # 📚 Documentation pages
-├── 📁 _posts/            # 📰 Blog posts
-├── 📁 _layouts/          # 🖼️ Page templates
-├── 📁 _includes/         # 🧩 Reusable components
-├── 📁 assets/css/        # 🎨 Custom styles
-├── 📁 blog/              # 📰 Blog listing
-├── 📁 docs/              # 📚 Docs listing
-└── 📄 index.html         # 🏠 Homepage
-```
-
----
-
-## 📝 Writing Content
-
-### 📰 Blog Posts
-
-Create `_posts/2024-01-15-my-post.md`:
-
-```markdown
----
-title: "My Awesome Post 🚀"
-description: "A brief description of the post"
-date: 2024-01-15
-author: "Your Name"
-categories: [Tutorial]
-tags: [jekyll, blogging]
-image: /assets/images/post-cover.jpg  # Optional
----
-
-Your content here! Supports **Markdown** and HTML.
-```
-
-### 📚 Documentation
-
-Create `_docs/getting-started.md`:
-
-```markdown
----
-title: "Getting Started"
-description: "Learn how to get started"
-order: 1  # 👈 Controls sidebar order
----
-
-## Installation
-
-Step-by-step guide here...
+your-site/
+├── _config.yml          # Site configuration
+├── _data/
+│   ├── navigation.yml   # Header menu
+│   ├── social.yml       # Social links
+│   ├── footer.yml       # Footer columns
+│   ├── badges.yml       # Badge definitions
+│   └── versions.yml     # Doc versions
+├── _docs/               # Documentation pages
+├── _posts/              # Blog posts
+├── _layouts/
+│   ├── default.html     # Base layout
+│   ├── post.html        # Blog post
+│   ├── docs.html        # Documentation
+│   ├── api.html         # API reference
+│   ├── cli.html         # CLI reference
+│   ├── changelog.html   # GitHub releases
+│   ├── 404.html         # Error page
+│   └── coming-soon.html # Pre-launch page
+├── _includes/
+│   ├── components/      # UI components
+│   │   ├── badge.html
+│   │   ├── badge-group.html
+│   │   ├── card.html
+│   │   ├── button.html
+│   │   ├── tabs.html
+│   │   ├── accordion.html
+│   │   ├── stats-counter.html
+│   │   ├── endpoint.html
+│   │   ├── cli-command.html
+│   │   └── version-selector.html
+│   ├── search.html      # Search modal
+│   └── pagination.html
+├── assets/
+│   ├── css/custom.css   # Custom styles
+│   └── search.json      # Search index
+├── blog/                # Blog listing
+├── docs/                # Docs listing
+├── api.md               # API docs example
+├── cli.md               # CLI docs example
+├── changelog.md         # Changelog page
+├── coming-soon.html     # Coming soon page
+├── 404.html             # 404 error page
+└── index.html           # Homepage
 ```
 
 ---
 
-## 🧩 Components
-
-### 💬 Callouts
-
-```html
-<div class="callout callout-info">
-  💡 <strong>Pro Tip:</strong> This is helpful information!
-</div>
-
-<div class="callout callout-warning">
-  ⚠️ <strong>Warning:</strong> Be careful with this!
-</div>
-
-<div class="callout callout-success">
-  ✅ <strong>Success:</strong> You did it!
-</div>
-
-<div class="callout callout-danger">
-  🚨 <strong>Danger:</strong> Don't do this!
-</div>
-```
-
-### 📋 Steps List
-
-```html
-<ol class="steps">
-  <li>First, do this</li>
-  <li>Then, do that</li>
-  <li>Finally, celebrate! 🎉</li>
-</ol>
-```
-
-### 🃏 Cards Grid
-
-```html
-<div class="not-prose cards-grid">
-  <a href="/docs/" class="card">
-    <div class="card-title">📚 Documentation</div>
-    <div class="card-description">Learn how to use Minima+</div>
-  </a>
-  <a href="/blog/" class="card">
-    <div class="card-title">📰 Blog</div>
-    <div class="card-description">Read our latest posts</div>
-  </a>
-</div>
-```
-
----
-
-## ⚙️ Configuration
+## Configuration
 
 Full `_config.yml` options:
 
 ```yaml
-# 🏷️ Site Basics
+# Site Basics
 title: "My Site"
 description: "My awesome site"
 author: "Your Name"
 url: "https://username.github.io"
-baseurl: "/repo-name"  # Leave empty for user sites
+baseurl: "/repo-name"
 
-# 🎨 Theme Configuration
+# GitHub repo for changelog
+github_repo: "username/repo"
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-paginate-v2
+
+# Pagination
+pagination:
+  enabled: true
+  per_page: 6
+  permalink: '/page/:num/'
+
+# Theme Configuration
 theme_config:
   colors:
-    primary: "indigo"      # Main color
-    secondary: "slate"     # Secondary color
-    accent: "amber"        # Accent color
+    primary: "indigo"
+    secondary: "slate"
+    accent: "amber"
 
   components:
-    show_toc: true         # 📑 Table of contents
-    show_reading_time: true # ⏱️ Reading time
-    show_date: true        # 📅 Post dates
-    show_author: true      # 👤 Author names
-    show_tags: true        # 🏷️ Post tags
-    show_categories: true  # 📁 Categories
+    show_toc: true
+    show_reading_time: true
+    show_date: true
+    show_author: true
+    show_tags: true
+    show_categories: true
 
   features:
-    dark_mode: true        # 🌙 Dark mode toggle
+    dark_mode: true
+    search: true
 
-# 📊 Analytics (optional)
+# Analytics (optional)
 analytics:
   google_analytics: "G-XXXXXXXXXX"
   plausible: "your-domain.com"
@@ -320,59 +452,102 @@ analytics:
 
 ---
 
-## 🚀 Deployment
+## Components
 
-### GitHub Pages (Automatic) ✨
+### Badges
+
+```liquid
+{% include components/badge.html
+   service="shields"
+   type="github/stars"
+   repo="E-Segments/minima-plus"
+   style="for-the-badge"
+%}
+```
+
+### Callouts
+
+```html
+<div class="callout callout-info">
+  <strong>Pro Tip:</strong> This is helpful information!
+</div>
+```
+
+### Cards Grid
+
+```html
+<div class="not-prose cards-grid">
+  <a href="/docs/" class="card">
+    <div class="card-title">Documentation</div>
+    <div class="card-description">Learn how to use Minima+</div>
+  </a>
+</div>
+```
+
+### Steps List
+
+```html
+<ol class="steps">
+  <li>First, do this</li>
+  <li>Then, do that</li>
+  <li>Finally, celebrate!</li>
+</ol>
+```
+
+---
+
+## Deployment
+
+### GitHub Pages (Automatic)
 
 This template includes GitHub Actions for automatic deployment!
 
 1. Go to **Settings** → **Pages**
 2. Under **Build and deployment**, select **GitHub Actions**
 3. Push to `main` branch
-4. 🎉 Your site deploys automatically!
+4. Your site deploys automatically!
 
-### Custom Domain 🌐
+### Custom Domain
 
-1. Create a `CNAME` file:
-   ```
-   yourdomain.com
-   ```
+1. Create a `CNAME` file with your domain
 2. Configure DNS at your registrar
 3. Enable **Enforce HTTPS** in Pages settings
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Feel free to:
 
-- 🐛 Report bugs
-- 💡 Suggest features
-- 🔧 Submit pull requests
+- Report bugs
+- Suggest features
+- Submit pull requests
 
 ---
 
-## 📄 License
+## License
 
-MIT License — use it for anything! Free forever. ❤️
+MIT License — use it for anything! Free forever.
 
 ---
 
-## 🙏 Credits
+## Credits
 
-Built with love using:
+Built with:
 
 - [Jekyll](https://jekyllrb.com/) — Static site generator
 - [Tailwind CSS](https://tailwindcss.com/) — Utility-first CSS
+- [Lunr.js](https://lunrjs.com/) — Client-side search
 - [Prism.js](https://prismjs.com/) — Syntax highlighting
+- [Shields.io](https://shields.io/) — Badges
 - [Heroicons](https://heroicons.com/) — Beautiful icons
 
 ---
 
 <div align="center">
 
-**⭐ Star this repo if you find it useful! ⭐**
+**Star this repo if you find it useful!**
 
-Made with ❤️ by [E-Segments](https://github.com/E-Segments)
+Made with care by [E-Segments](https://github.com/E-Segments)
 
 </div>

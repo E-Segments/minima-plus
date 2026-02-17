@@ -1,0 +1,58 @@
+---
+layout: null
+---
+[
+  {%- assign items = "" | split: "" -%}
+
+  {%- comment %} Index blog posts {% endcomment -%}
+  {%- for post in site.posts -%}
+    {%- capture item -%}
+    {
+      "title": {{ post.title | jsonify }},
+      "url": {{ post.url | relative_url | jsonify }},
+      "content": {{ post.content | strip_html | truncatewords: 100 | jsonify }},
+      "excerpt": {{ post.excerpt | strip_html | truncatewords: 30 | jsonify }},
+      "type": "post",
+      "categories": {{ post.categories | jsonify }},
+      "tags": {{ post.tags | jsonify }},
+      "date": {{ post.date | date: "%Y-%m-%d" | jsonify }}
+    }
+    {%- endcapture -%}
+    {%- assign items = items | push: item -%}
+  {%- endfor -%}
+
+  {%- comment %} Index documentation {% endcomment -%}
+  {%- for doc in site.docs -%}
+    {%- capture item -%}
+    {
+      "title": {{ doc.title | jsonify }},
+      "url": {{ doc.url | relative_url | jsonify }},
+      "content": {{ doc.content | strip_html | truncatewords: 100 | jsonify }},
+      "excerpt": {{ doc.description | default: doc.excerpt | strip_html | truncatewords: 30 | jsonify }},
+      "type": "doc",
+      "order": {{ doc.order | default: 999 | jsonify }}
+    }
+    {%- endcapture -%}
+    {%- assign items = items | push: item -%}
+  {%- endfor -%}
+
+  {%- comment %} Index pages (optional) {% endcomment -%}
+  {%- for page in site.pages -%}
+    {%- if page.title and page.searchable != false and page.layout != 'changelog' -%}
+      {%- unless page.url contains '/assets/' or page.url contains '/page/' -%}
+        {%- capture item -%}
+        {
+          "title": {{ page.title | jsonify }},
+          "url": {{ page.url | relative_url | jsonify }},
+          "content": {{ page.content | strip_html | truncatewords: 50 | jsonify }},
+          "excerpt": {{ page.description | default: "" | jsonify }},
+          "type": "page"
+        }
+        {%- endcapture -%}
+        {%- assign items = items | push: item -%}
+      {%- endunless -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {{ items | join: "," }}
+]

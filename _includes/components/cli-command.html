@@ -1,0 +1,150 @@
+{% comment %}
+CLI Command Component - Document CLI commands with arguments and options
+
+Usage:
+  {% include components/cli-command.html
+     name="serve"
+     description="Start the development server"
+     usage="jekyll serve [options]"
+     arguments=page.arguments
+     options=page.options
+     examples=page.examples
+  %}
+
+Data structure:
+  arguments:
+    - name: "source"
+      description: "Source directory"
+      required: false
+      default: "."
+
+  options:
+    - flag: "-p, --port"
+      type: "number"
+      description: "Port to run on"
+      default: "4000"
+
+  examples:
+    - title: "Basic usage"
+      code: "jekyll serve"
+    - title: "Custom port"
+      code: "jekyll serve --port 3000"
+{% endcomment %}
+
+<div class="cli-command my-8 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-900">
+  <!-- Header -->
+  <div class="cli-header px-5 py-4 bg-slate-800 dark:bg-slate-950">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="text-emerald-400 font-mono text-sm">$</span>
+      <code class="text-white font-mono font-medium">{{ include.usage | default: include.name }}</code>
+    </div>
+    {% if include.description %}
+    <p class="text-sm text-slate-400">{{ include.description }}</p>
+    {% endif %}
+  </div>
+
+  <!-- Arguments -->
+  {% if include.arguments %}
+  <div class="cli-arguments px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+    <h4 class="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+      Arguments
+    </h4>
+    <div class="space-y-3">
+      {% for arg in include.arguments %}
+      <div class="flex flex-wrap items-start gap-x-4 gap-y-1">
+        <div class="flex items-center gap-2">
+          <code class="text-sm font-mono font-medium text-primary-600 dark:text-primary-400">{{ arg.name }}</code>
+          {% if arg.required %}
+          <span class="text-xs font-medium text-red-500">required</span>
+          {% endif %}
+        </div>
+        <span class="text-sm text-slate-600 dark:text-slate-400 flex-1">{{ arg.description }}</span>
+        {% if arg.default %}
+        <span class="text-xs text-slate-400 dark:text-slate-500">Default: <code class="bg-slate-100 dark:bg-slate-800 px-1 rounded">{{ arg.default }}</code></span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Options/Flags -->
+  {% if include.options %}
+  <div class="cli-options px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+    <h4 class="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+      </svg>
+      Options
+    </h4>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+            <th class="pb-2 pr-4">Flag</th>
+            <th class="pb-2 pr-4">Type</th>
+            <th class="pb-2 pr-4">Default</th>
+            <th class="pb-2">Description</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+          {% for opt in include.options %}
+          <tr>
+            <td class="py-2 pr-4">
+              <code class="text-sm font-mono text-emerald-600 dark:text-emerald-400 whitespace-nowrap">{{ opt.flag }}</code>
+            </td>
+            <td class="py-2 pr-4">
+              {% if opt.type %}
+              <code class="text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">{{ opt.type }}</code>
+              {% else %}
+              <span class="text-xs text-slate-400">boolean</span>
+              {% endif %}
+            </td>
+            <td class="py-2 pr-4 text-slate-500 dark:text-slate-400">
+              {% if opt.default %}
+              <code class="text-xs">{{ opt.default }}</code>
+              {% else %}
+              <span class="text-slate-300 dark:text-slate-600">-</span>
+              {% endif %}
+            </td>
+            <td class="py-2 text-slate-600 dark:text-slate-400">{{ opt.description }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Examples -->
+  {% if include.examples %}
+  <div class="cli-examples px-5 py-4">
+    <h4 class="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+      </svg>
+      Examples
+    </h4>
+    <div class="space-y-4">
+      {% for example in include.examples %}
+      <div>
+        {% if example.title %}
+        <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">{{ example.title }}</p>
+        {% endif %}
+        <div class="relative">
+          <pre class="!my-0 !bg-slate-800 dark:!bg-slate-950"><code class="language-bash">{{ example.code }}</code></pre>
+        </div>
+        {% if example.output %}
+        <div class="mt-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-sm text-slate-600 dark:text-slate-400 font-mono">
+          {{ example.output }}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>

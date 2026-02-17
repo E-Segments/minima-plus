@@ -5,6 +5,9 @@ url: ""
 baseurl: ""
 author: "Your Name"
 
+# GitHub repository (for changelog/releases)
+github_repo: "E-Segments/minima-plus"
+
 # Build settings
 markdown: kramdown
 permalink: /blog/:title/
@@ -15,6 +18,28 @@ plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-remote-theme
+  - jekyll-paginate-v2
+
+# Pagination (jekyll-paginate-v2)
+pagination:
+  enabled: true
+  per_page: 6
+  permalink: '/page/:num/'
+  sort_field: 'date'
+  sort_reverse: true
+  trail:
+    before: 2
+    after: 2
+
+# Autopages for collections
+autopages:
+  enabled: true
+  collections:
+    enabled: false
+  categories:
+    enabled: false
+  tags:
+    enabled: false
 
 # Kramdown settings (for Prism.js compatibility)
 kramdown:
@@ -73,7 +98,7 @@ theme_config:
   # Features
   features:
     dark_mode: true
-    search: false
+    search: true
     comments: false
 
 # SEO

@@ -1,7 +1,7 @@
 ---
 title: "Configuration"
 description: "Learn how to configure colors, fonts, and features"
-order: 2
+order: 4
 ---
 
 This guide covers all configuration options available in the theme.
@@ -16,6 +16,46 @@ description: "A modern Jekyll theme"
 url: "https://example.com"
 baseurl: ""
 author: "Your Name"
+
+# GitHub repository (for changelog)
+github_repo: "username/repo"
+```
+
+## Plugins
+
+Required plugins for all features:
+
+```yaml
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-paginate-v2
+```
+
+## Pagination
+
+Configure blog pagination:
+
+```yaml
+pagination:
+  enabled: true
+  per_page: 6
+  permalink: '/page/:num/'
+  sort_field: 'date'
+  sort_reverse: true
+  trail:
+    before: 2
+    after: 2
+
+autopages:
+  enabled: true
+  collections:
+    enabled: false
+  categories:
+    enabled: false
+  tags:
+    enabled: false
 ```
 
 ## Theme Colors
@@ -38,7 +78,12 @@ theme_config:
 | blue | Classic | Corporate |
 | emerald | Fresh | Health, Nature |
 | rose | Warm | Creative, Fashion |
+| violet | Modern | Design, Creative |
 | amber | Bold | Energy, Food |
+| cyan | Tech | Developer tools |
+| teal | Calm | Health, Wellness |
+
+Full list: `red`, `orange`, `amber`, `yellow`, `lime`, `green`, `emerald`, `teal`, `cyan`, `sky`, `blue`, `indigo`, `violet`, `purple`, `fuchsia`, `pink`, `rose`, `slate`, `gray`, `zinc`, `neutral`, `stone`
 
 ## Typography
 
@@ -94,9 +139,23 @@ Enable or disable theme features:
 theme_config:
   features:
     dark_mode: true      # Dark mode toggle
-    search: false        # Search (coming soon)
+    search: true         # Lunr.js search (Cmd+K)
     comments: false      # Comments (coming soon)
 ```
+
+### Search
+
+When search is enabled:
+- A search button appears in the header
+- Press `Cmd+K` (Mac) or `Ctrl+K` (Windows) to open
+- Searches posts, docs, and pages
+
+### Dark Mode
+
+When dark mode is enabled:
+- A toggle appears in the header
+- User preference saved to localStorage
+- Falls back to system preference
 
 ## SEO Configuration
 
@@ -118,7 +177,76 @@ analytics:
   plausible: "yourdomain.com"
 ```
 
+## Full Example
+
+Here's a complete `_config.yml`:
+
+```yaml
+# Site basics
+title: "My Site"
+description: "A modern Jekyll theme"
+url: "https://username.github.io"
+baseurl: "/repo-name"
+author: "Your Name"
+
+# GitHub repo for changelog
+github_repo: "username/repo"
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-paginate-v2
+
+# Pagination
+pagination:
+  enabled: true
+  per_page: 6
+  permalink: '/page/:num/'
+
+# Theme Configuration
+theme_config:
+  colors:
+    primary: "indigo"
+    secondary: "slate"
+    accent: "amber"
+
+  fonts:
+    heading: "Inter"
+    body: "Inter"
+    mono: "JetBrains Mono"
+
+  layout:
+    max_width: "6xl"
+    content_width: "3xl"
+    sidebar: true
+
+  components:
+    show_toc: true
+    show_reading_time: true
+    show_date: true
+    show_author: true
+    show_tags: true
+    show_categories: true
+
+  features:
+    dark_mode: true
+    search: true
+
+# SEO
+seo:
+  og_image: "/assets/images/og-default.png"
+  twitter_handle: ""
+
+# Analytics
+analytics:
+  google_analytics: ""
+  plausible: ""
+```
+
 ## Next Steps
 
-- Read the [Components Guide](/docs/components/) to learn about reusable components
-- Check the [Deployment Guide](/docs/deployment/) for hosting options
+- Read the [Features Guide](/docs/features/) to learn about search, pagination, and changelog
+- Check the [Components Guide](/docs/components/) to learn about reusable components
+- See the [Deployment Guide](/docs/deployment/) for hosting options

@@ -1,0 +1,354 @@
+---
+layout: default
+---
+
+<section class="py-8 sm:py-12 lg:py-16">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <header class="mb-10 lg:mb-14 text-center">
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">
+        {{ page.title | default: "Changelog" }}
+      </h1>
+      {% if page.description %}
+      <p class="mt-4 lg:mt-6 text-lg lg:text-xl text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto">
+        {{ page.description }}
+      </p>
+      {% endif %}
+    </header>
+
+    {{ content }}
+
+    <!-- Controls: Search + Filter -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-8">
+      <!-- Search -->
+      <div class="relative flex-1">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input type="text"
+               id="release-search"
+               class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+               placeholder="Search releases...">
+      </div>
+
+      <!-- Filter Dropdown -->
+      <select id="release-filter"
+              class="px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all cursor-pointer">
+        <option value="all">All Releases</option>
+        <option value="major">Major Only</option>
+        <option value="minor">Minor & Major</option>
+        <option value="prerelease">Pre-releases</option>
+      </select>
+    </div>
+
+    <!-- Loading State -->
+    <div id="releases-loading" class="text-center py-16">
+      <svg class="w-10 h-10 mx-auto text-primary-500 animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <p class="mt-4 text-slate-500 dark:text-slate-400">Loading releases from GitHub...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="releases-error" class="hidden text-center py-16">
+      <svg class="w-16 h-16 mx-auto text-red-300 dark:text-red-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      <h2 class="text-xl font-semibold text-slate-900 dark:text-white mb-2">Failed to load releases</h2>
+      <p id="releases-error-message" class="text-slate-500 dark:text-slate-400 mb-4"></p>
+      <button type="button" onclick="loadReleases()" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors">
+        Try Again
+      </button>
+    </div>
+
+    <!-- Empty State -->
+    <div id="releases-empty" class="hidden text-center py-16">
+      <svg class="w-16 h-16 mx-auto text-slate-300 dark:text-slate-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+      </svg>
+      <h2 class="text-xl font-semibold text-slate-900 dark:text-white mb-2">No releases found</h2>
+      <p class="text-slate-500 dark:text-slate-400">No releases match your search criteria.</p>
+    </div>
+
+    <!-- Releases List -->
+    <div id="releases-list" class="hidden space-y-6"></div>
+
+    <!-- Pagination -->
+    <div id="releases-pagination" class="hidden mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div id="releases-showing" class="text-sm text-slate-500 dark:text-slate-400"></div>
+      <div class="flex items-center gap-2">
+        <button type="button" id="prev-page" class="pagination-btn flex items-center justify-center w-10 h-10 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <span id="page-info" class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300"></span>
+        <button type="button" id="next-page" class="pagination-btn flex items-center justify-center w-10 h-10 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Marked.js for Markdown rendering -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+(function() {
+  // Configuration
+  const GITHUB_REPO = '{{ site.github_repo | default: "owner/repo" }}';
+  const PER_PAGE = 5;
+
+  // DOM elements
+  const loadingEl = document.getElementById('releases-loading');
+  const errorEl = document.getElementById('releases-error');
+  const errorMsgEl = document.getElementById('releases-error-message');
+  const emptyEl = document.getElementById('releases-empty');
+  const listEl = document.getElementById('releases-list');
+  const paginationEl = document.getElementById('releases-pagination');
+  const showingEl = document.getElementById('releases-showing');
+  const pageInfoEl = document.getElementById('page-info');
+  const prevBtn = document.getElementById('prev-page');
+  const nextBtn = document.getElementById('next-page');
+  const searchInput = document.getElementById('release-search');
+  const filterSelect = document.getElementById('release-filter');
+
+  // State
+  let allReleases = [];
+  let filteredReleases = [];
+  let currentPage = 1;
+
+  // Load releases from GitHub API
+  window.loadReleases = async function() {
+    loadingEl.classList.remove('hidden');
+    errorEl.classList.add('hidden');
+    emptyEl.classList.add('hidden');
+    listEl.classList.add('hidden');
+    paginationEl.classList.add('hidden');
+
+    try {
+      const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases?per_page=100`);
+
+      if (!response.ok) {
+        throw new Error(response.status === 404 ? 'Repository not found' : `HTTP ${response.status}`);
+      }
+
+      allReleases = await response.json();
+
+      loadingEl.classList.add('hidden');
+
+      if (allReleases.length === 0) {
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+
+      applyFilters();
+    } catch (error) {
+      console.error('Failed to load releases:', error);
+      loadingEl.classList.add('hidden');
+      errorEl.classList.remove('hidden');
+      errorMsgEl.textContent = error.message || 'Unknown error occurred';
+    }
+  };
+
+  // Apply search and filter
+  function applyFilters() {
+    const query = searchInput.value.toLowerCase().trim();
+    const filter = filterSelect.value;
+
+    filteredReleases = allReleases.filter(release => {
+      // Search filter
+      if (query) {
+        const searchable = `${release.name} ${release.tag_name} ${release.body || ''}`.toLowerCase();
+        if (!searchable.includes(query)) return false;
+      }
+
+      // Type filter
+      if (filter === 'prerelease') {
+        return release.prerelease;
+      } else if (filter === 'major') {
+        return !release.prerelease && isMajorRelease(release.tag_name);
+      } else if (filter === 'minor') {
+        return !release.prerelease && (isMajorRelease(release.tag_name) || isMinorRelease(release.tag_name));
+      }
+
+      return !release.prerelease || filter === 'all';
+    });
+
+    currentPage = 1;
+    renderReleases();
+  }
+
+  // Check if version is major (x.0.0)
+  function isMajorRelease(tag) {
+    const match = tag.match(/v?(\d+)\.(\d+)\.(\d+)/);
+    if (!match) return false;
+    return match[2] === '0' && match[3] === '0';
+  }
+
+  // Check if version is minor (x.y.0)
+  function isMinorRelease(tag) {
+    const match = tag.match(/v?(\d+)\.(\d+)\.(\d+)/);
+    if (!match) return false;
+    return match[3] === '0';
+  }
+
+  // Render releases
+  function renderReleases() {
+    if (filteredReleases.length === 0) {
+      listEl.classList.add('hidden');
+      paginationEl.classList.add('hidden');
+      emptyEl.classList.remove('hidden');
+      return;
+    }
+
+    emptyEl.classList.add('hidden');
+    listEl.classList.remove('hidden');
+
+    // Pagination
+    const totalPages = Math.ceil(filteredReleases.length / PER_PAGE);
+    const startIndex = (currentPage - 1) * PER_PAGE;
+    const endIndex = Math.min(startIndex + PER_PAGE, filteredReleases.length);
+    const pageReleases = filteredReleases.slice(startIndex, endIndex);
+
+    // Render list
+    listEl.innerHTML = pageReleases.map((release, index) => {
+      const isLatest = index === 0 && currentPage === 1 && !release.prerelease;
+      const date = new Date(release.published_at);
+      const formattedDate = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const body = release.body ? marked.parse(release.body) : '<p class="text-slate-500 dark:text-slate-400 italic">No release notes provided.</p>';
+
+      return `
+        <article class="release-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div class="p-6 lg:p-8">
+            <!-- Header -->
+            <div class="flex flex-wrap items-center gap-3 mb-4">
+              <a href="${release.html_url}" target="_blank" rel="noopener noreferrer"
+                 class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors font-heading">
+                ${escapeHtml(release.name || release.tag_name)}
+              </a>
+              ${isLatest ? '<span class="px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 rounded-full">Latest</span>' : ''}
+              ${release.prerelease ? '<span class="px-2.5 py-1 text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 rounded-full">Pre-release</span>' : ''}
+              <span class="px-2.5 py-1 text-xs font-mono font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-full">${escapeHtml(release.tag_name)}</span>
+            </div>
+
+            <!-- Date -->
+            <time datetime="${release.published_at}" class="flex items-center text-sm text-slate-500 dark:text-slate-400 mb-6">
+              <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              ${formattedDate}
+            </time>
+
+            <!-- Body -->
+            <div class="release-body prose prose-slate dark:prose-invert max-w-none text-sm lg:text-base">
+              ${body}
+            </div>
+
+            <!-- Assets -->
+            ${release.assets && release.assets.length > 0 ? `
+            <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+              <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Downloads</h4>
+              <div class="flex flex-wrap gap-2">
+                ${release.assets.map(asset => `
+                  <a href="${asset.browser_download_url}"
+                     class="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                     download>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    ${escapeHtml(asset.name)}
+                    <span class="text-xs text-slate-400 dark:text-slate-500">(${formatBytes(asset.size)})</span>
+                  </a>
+                `).join('')}
+              </div>
+            </div>
+            ` : ''}
+
+            <!-- Footer -->
+            <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+              <a href="${release.html_url}"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 class="inline-flex items-center gap-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors">
+                View on GitHub
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                </svg>
+              </a>
+              ${release.author ? `
+              <a href="${release.author.html_url}"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 class="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
+                <img src="${release.author.avatar_url}" alt="${release.author.login}" class="w-5 h-5 rounded-full">
+                ${escapeHtml(release.author.login)}
+              </a>
+              ` : ''}
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    // Update pagination
+    if (totalPages > 1) {
+      paginationEl.classList.remove('hidden');
+      showingEl.textContent = `Showing ${startIndex + 1}-${endIndex} of ${filteredReleases.length}`;
+      pageInfoEl.textContent = `Page ${currentPage} of ${totalPages}`;
+      prevBtn.disabled = currentPage === 1;
+      nextBtn.disabled = currentPage === totalPages;
+    } else {
+      paginationEl.classList.add('hidden');
+    }
+  }
+
+  // Helper functions
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function formatBytes(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  }
+
+  // Event listeners
+  let debounceTimer;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(applyFilters, 200);
+  });
+
+  filterSelect.addEventListener('change', applyFilters);
+
+  prevBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderReleases();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    const totalPages = Math.ceil(filteredReleases.length / PER_PAGE);
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderReleases();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+
+  // Initial load
+  loadReleases();
+})();
+</script>

@@ -1,0 +1,135 @@
+{% comment %}
+Code Tabs Component - Tabbed code blocks for multiple languages/package managers
+
+Usage in front matter:
+  code_examples:
+    - label: "npm"
+      language: "bash"
+      code: "npm install package-name"
+    - label: "yarn"
+      language: "bash"
+      code: "yarn add package-name"
+    - label: "pnpm"
+      language: "bash"
+      code: "pnpm add package-name"
+
+Then include:
+  {% include components/code-tabs.html tabs=page.code_examples id="install" %}
+
+Or inline:
+  {% include components/code-tabs.html id="example" %}
+  <div data-code-tab="example" data-label="JavaScript" data-lang="javascript">
+  console.log('Hello');
+  </div>
+  <div data-code-tab="example" data-label="Python" data-lang="python">
+  print('Hello')
+  </div>
+  {% include components/code-tabs.html id="example" end=true %}
+{% endcomment %}
+
+{% assign tab_id = include.id | default: "code-tabs" %}
+
+{% if include.end %}
+</div>
+<script>
+(function() {
+  const container = document.querySelector('[data-code-tabs="{{ tab_id }}"]');
+  if (!container || container.dataset.initialized) return;
+  container.dataset.initialized = 'true';
+
+  const rawTabs = container.querySelectorAll('[data-code-tab="{{ tab_id }}"]');
+  if (rawTabs.length === 0) return;
+
+  // Build tabs from raw content
+  const tabsData = [];
+  rawTabs.forEach(tab => {
+    tabsData.push({
+      label: tab.dataset.label,
+      lang: tab.dataset.lang || 'text',
+      code: tab.textContent.trim()
+    });
+    tab.remove();
+  });
+
+  // Create tab UI
+  const header = document.createElement('div');
+  header.className = 'flex bg-slate-800 dark:bg-slate-900 rounded-t-lg overflow-hidden';
+
+  const codeContainer = document.createElement('div');
+  codeContainer.className = 'code-tabs-content';
+
+  tabsData.forEach((tab, index) => {
+    // Button
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'px-4 py-2 text-sm font-medium transition-colors ' +
+      (index === 0
+        ? 'bg-slate-700 dark:bg-slate-800 text-white'
+        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
+    btn.textContent = tab.label;
+    btn.onclick = () => {
+      header.querySelectorAll('button').forEach((b, i) => {
+        b.className = 'px-4 py-2 text-sm font-medium transition-colors ' +
+          (i === index
+            ? 'bg-slate-700 dark:bg-slate-800 text-white'
+            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
+      });
+      codeContainer.querySelectorAll('pre').forEach((p, i) => {
+        p.style.display = i === index ? 'block' : 'none';
+      });
+    };
+    header.appendChild(btn);
+
+    // Code block
+    const pre = document.createElement('pre');
+    pre.className = 'language-' + tab.lang + ' !rounded-t-none !mt-0';
+    pre.style.display = index === 0 ? 'block' : 'none';
+    const code = document.createElement('code');
+    code.className = 'language-' + tab.lang;
+    code.textContent = tab.code;
+    pre.appendChild(code);
+    codeContainer.appendChild(pre);
+
+    // Highlight if Prism is available
+    if (window.Prism) {
+      Prism.highlightElement(code);
+    }
+  });
+
+  container.appendChild(header);
+  container.appendChild(codeContainer);
+})();
+</script>
+{% elsif include.tabs %}
+<div class="code-tabs my-6 not-prose" data-code-tabs="{{ tab_id }}">
+  <div class="flex bg-slate-800 dark:bg-slate-900 rounded-t-lg overflow-hidden">
+    {% for tab in include.tabs %}
+    <button type="button"
+            onclick="switchCodeTab('{{ tab_id }}', {{ forloop.index0 }})"
+            class="code-tab-btn px-4 py-2 text-sm font-medium transition-colors {% if forloop.first %}bg-slate-700 dark:bg-slate-800 text-white{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-700/50{% endif %}"
+            data-index="{{ forloop.index0 }}">
+      {{ tab.label }}
+    </button>
+    {% endfor %}
+  </div>
+  <div class="code-tabs-content">
+    {% for tab in include.tabs %}
+    <pre class="language-{{ tab.language | default: 'text' }} !rounded-t-none !mt-0" style="{% unless forloop.first %}display: none;{% endunless %}"><code class="language-{{ tab.language | default: 'text' }}">{{ tab.code | escape }}</code></pre>
+    {% endfor %}
+  </div>
+</div>
+<script>
+function switchCodeTab(id, index) {
+  const container = document.querySelector('[data-code-tabs="' + id + '"]');
+  container.querySelectorAll('.code-tab-btn').forEach((btn, i) => {
+    btn.className = 'code-tab-btn px-4 py-2 text-sm font-medium transition-colors ' +
+      (i === index ? 'bg-slate-700 dark:bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
+  });
+  container.querySelectorAll('.code-tabs-content pre').forEach((pre, i) => {
+    pre.style.display = i === index ? 'block' : 'none';
+  });
+}
+</script>
+{% else %}
+<div class="code-tabs my-6 not-prose" data-code-tabs="{{ tab_id }}">
+{% endif %}

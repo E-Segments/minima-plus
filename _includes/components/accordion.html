@@ -1,0 +1,98 @@
+{% comment %}
+Accordion Component - Expandable/collapsible sections
+
+Usage with data:
+  faq:
+    - question: "What is Jekyll?"
+      answer: "Jekyll is a static site generator."
+    - question: "Is it free?"
+      answer: "Yes, it's open source and free."
+
+  {% include components/accordion.html items=page.faq %}
+
+Or wrap manually:
+  {% include components/accordion.html id="faq" %}
+  {% include components/accordion-item.html title="Question 1" %}
+  Answer content here...
+  {% include components/accordion-item.html end=true %}
+  {% include components/accordion.html end=true %}
+
+Parameters:
+  items       - Array of items with question/answer or title/content
+  id          - Unique ID for the accordion
+  multiple    - Allow multiple panels open (default: false)
+  style       - "default", "bordered", or "separated"
+{% endcomment %}
+
+{% assign acc_id = include.id | default: "accordion" %}
+{% assign acc_style = include.style | default: "default" %}
+{% assign acc_multiple = include.multiple | default: false %}
+
+{% if include.end %}
+</div>
+{% elsif include.items %}
+<div class="accordion {% if acc_style == 'separated' %}space-y-3{% elsif acc_style == 'bordered' %}border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden{% else %}divide-y divide-slate-200 dark:divide-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden{% endif %}"
+     data-accordion="{{ acc_id }}"
+     data-multiple="{{ acc_multiple }}">
+  {% for item in include.items %}
+  {% assign item_title = item.question | default: item.title %}
+  {% assign item_content = item.answer | default: item.content %}
+  <div class="accordion-item {% if acc_style == 'separated' %}border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden{% endif %}">
+    <button type="button"
+            class="accordion-trigger w-full flex items-center justify-between px-5 py-4 text-left bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+            aria-expanded="false"
+            aria-controls="panel-{{ acc_id }}-{{ forloop.index }}">
+      <span class="font-medium text-slate-900 dark:text-white">{{ item_title }}</span>
+      <svg class="accordion-icon w-5 h-5 text-slate-400 dark:text-slate-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </button>
+    <div id="panel-{{ acc_id }}-{{ forloop.index }}"
+         class="accordion-panel hidden"
+         role="region">
+      <div class="px-5 pb-5 pt-0 text-slate-600 dark:text-slate-400">
+        {{ item_content | markdownify }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+(function() {
+  const accordion = document.querySelector('[data-accordion="{{ acc_id }}"]');
+  if (!accordion || accordion.dataset.initialized) return;
+  accordion.dataset.initialized = 'true';
+
+  const allowMultiple = accordion.dataset.multiple === 'true';
+  const triggers = accordion.querySelectorAll('.accordion-trigger');
+
+  triggers.forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      const panel = trigger.nextElementSibling;
+      const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+
+      // Close others if not multiple
+      if (!allowMultiple && !isOpen) {
+        triggers.forEach(t => {
+          if (t !== trigger) {
+            t.setAttribute('aria-expanded', 'false');
+            t.querySelector('.accordion-icon').style.transform = '';
+            t.nextElementSibling.classList.add('hidden');
+          }
+        });
+      }
+
+      // Toggle current
+      trigger.setAttribute('aria-expanded', !isOpen);
+      trigger.querySelector('.accordion-icon').style.transform = isOpen ? '' : 'rotate(180deg)';
+      panel.classList.toggle('hidden');
+    });
+  });
+})();
+</script>
+{% else %}
+<div class="accordion {% if acc_style == 'separated' %}space-y-3{% elsif acc_style == 'bordered' %}border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden{% else %}divide-y divide-slate-200 dark:divide-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden{% endif %}"
+     data-accordion="{{ acc_id }}"
+     data-multiple="{{ acc_multiple }}">
+{% endif %}

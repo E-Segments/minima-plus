@@ -18,5 +18,10 @@
 
   <!-- Back to Top Button -->
   {% include back-to-top.html %}
+
+  <!-- Search Modal -->
+  {% if site.theme_config.features.search %}
+  {% include search.html %}
+  {% endif %}
 </body>
 </html>

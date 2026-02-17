@@ -1,0 +1,28 @@
+{% comment %}
+Version Warning Banner - Shows warning when viewing old docs version
+
+Usage:
+  {% include components/version-warning.html %}
+
+Set page.version in front matter to mark as old version.
+{% endcomment %}
+
+{% if page.version and page.version != site.data.versions.current %}
+{% assign latest_version = site.data.versions.versions | where: "latest", true | first %}
+
+<div class="version-warning mb-6 px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl">
+  <div class="flex items-start gap-3">
+    <svg class="w-5 h-5 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+    </svg>
+    <div class="flex-1">
+      <p class="text-sm text-amber-800 dark:text-amber-200">
+        {{ site.data.versions.warnings.old_version | default: "You're viewing documentation for an older version." }}
+        <a href="{{ latest_version.path | relative_url }}" class="font-medium underline hover:no-underline">
+          {{ site.data.versions.warnings.latest_link | default: "View the latest version" }} (v{{ site.data.versions.current }})
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endif %}

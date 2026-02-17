@@ -1,0 +1,72 @@
+# Theme Badges Configuration
+# These badges are displayed on the landing page and can be reused anywhere
+
+# Main theme badges
+theme:
+  - label: "Jekyll"
+    message: "4.3+"
+    color: "CC0000"
+    logo: "jekyll"
+    logoColor: "white"
+    style: "for-the-badge"
+
+  - label: "Tailwind CSS"
+    message: "v4"
+    color: "06B6D4"
+    logo: "tailwindcss"
+    logoColor: "white"
+    style: "for-the-badge"
+
+  - label: "License"
+    message: "MIT"
+    color: "green"
+    style: "for-the-badge"
+
+# GitHub badges (require github_repo in _config.yml)
+github:
+  - type: "github/v/release"
+    repo: "E-Segments/minima-plus"
+    style: "for-the-badge"
+
+  - type: "github/stars"
+    repo: "E-Segments/minima-plus"
+    style: "for-the-badge"
+    logo: "github"
+
+  - type: "github/forks"
+    repo: "E-Segments/minima-plus"
+    style: "for-the-badge"
+
+  - type: "github/issues"
+    repo: "E-Segments/minima-plus"
+    style: "for-the-badge"
+
+# Build status badges
+build:
+  - type: "github/actions/workflow/status"
+    repo: "E-Segments/minima-plus"
+    label: "deploy.yml"
+    style: "for-the-badge"
+    logo: "githubactions"
+    logoColor: "white"
+
+# Technology stack badges
+stack:
+  - label: "Ruby"
+    message: "3.0+"
+    color: "CC342D"
+    logo: "ruby"
+    logoColor: "white"
+    style: "flat-square"
+
+  - label: "Markdown"
+    message: "kramdown"
+    color: "000000"
+    logo: "markdown"
+    logoColor: "white"
+    style: "flat-square"
+
+  - label: "Prism.js"
+    message: "syntax"
+    color: "6C63FF"
+    style: "flat-square"
