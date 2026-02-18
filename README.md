@@ -1,6 +1,6 @@
 <div align="center">
 
-# Minima+
+# ✨ Minima+ ✨
 
 ### A beautiful, minimal Jekyll theme powered by Tailwind CSS v4
 
@@ -11,7 +11,7 @@ The next evolution of Jekyll's classic Minima theme — now with dark mode, sear
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Ready-222?style=for-the-badge&logo=github&logoColor=white)](https://pages.github.com/)
 
-[**Live Demo**](https://e-segments.github.io/minima-plus/) | [**Documentation**](https://e-segments.github.io/minima-plus/docs/) | [**Changelog**](https://e-segments.github.io/minima-plus/changelog/)
+[**🌐 Live Demo**](https://e-segments.github.io/minima-plus/) • [**📖 Documentation**](https://e-segments.github.io/minima-plus/docs/) • [**📋 Changelog**](https://e-segments.github.io/minima-plus/changelog/)
 
 <br>
 
@@ -21,75 +21,79 @@ The next evolution of Jekyll's classic Minima theme — now with dark mode, sear
 
 ---
 
-## Why Minima+?
+## 🎯 Why Minima+?
 
 | Feature | Minima (Classic) | Minima+ |
 |---------|:----------------:|:-------:|
-| Dark Mode | - | Yes |
-| Tailwind CSS | - | Yes |
-| No Build Step | Yes | Yes |
-| Responsive | Basic | Full |
-| Blog + Docs | Blog only | Both |
-| **Search (Lunr.js)** | - | **Yes** |
-| **Pagination** | - | **Yes** |
-| **Changelog** | - | **Yes** |
-| **Badges** | - | **Yes** |
-| **Stats Counter** | - | **Yes** |
-| **404 Page** | Basic | **Animated** |
-| **Coming Soon** | - | **Yes** |
-| Syntax Highlighting | Rouge | Prism.js |
-| Copy Code Button | - | Yes |
-| Table of Contents | - | Yes |
-| SEO Optimized | Basic | Full |
+| Dark Mode | ❌ | ✅ |
+| Tailwind CSS | ❌ | ✅ |
+| No Build Step | ✅ | ✅ |
+| Responsive | ⚠️ Basic | ✅ Full |
+| Blog + Docs | ⚠️ Blog only | ✅ Both |
+| **🔍 Search (Lunr.js)** | ❌ | ✅ |
+| **📄 Pagination** | ❌ | ✅ |
+| **📋 Changelog** | ❌ | ✅ |
+| **🏷️ Badges** | ❌ | ✅ |
+| **📊 Stats Counter** | ❌ | ✅ |
+| **🗂️ Tabs & Accordions** | ❌ | ✅ |
+| **📚 Versioned Docs** | ❌ | ✅ |
+| **📡 API Reference** | ❌ | ✅ |
+| **💻 CLI Reference** | ❌ | ✅ |
+| **🚫 404 Page** | ⚠️ Basic | ✅ Animated |
+| **🚀 Coming Soon** | ❌ | ✅ |
+| Syntax Highlighting | ⚠️ Rouge | ✅ Prism.js |
+| Copy Code Button | ❌ | ✅ |
+| Table of Contents | ❌ | ✅ |
+| SEO Optimized | ⚠️ Basic | ✅ Full |
 
 ---
 
-## Features
+## ✨ Features
 
 <table>
 <tr>
 <td width="50%">
 
-### Design
-- **16 Color Themes** — One line config change
-- **Dark Mode** — Auto-detects system preference
-- **Fully Responsive** — Mobile-first design
-- **Beautiful Typography** — Tailwind's prose classes
-- **Animated 404** — Creative error page
-- **Coming Soon** — Pre-launch landing page
+### 🎨 Design
+- 🌈 **16 Color Themes** — One line config change
+- 🌙 **Dark Mode** — Auto-detects system preference
+- 📱 **Fully Responsive** — Mobile-first design
+- ✏️ **Beautiful Typography** — Tailwind's prose classes
+- 🚫 **Animated 404** — Creative error page
+- 🚀 **Coming Soon** — Pre-launch landing page
 
 </td>
 <td width="50%">
 
-### Performance
-- **No Build Step** — Tailwind via CDN
-- **Static Output** — Lightning fast
-- **SEO Ready** — Meta tags, sitemap, Open Graph
-- **Accessible** — WCAG compliant
+### ⚡ Performance
+- 🚀 **No Build Step** — Tailwind via CDN
+- 📦 **Static Output** — Lightning fast
+- 🔍 **SEO Ready** — Meta tags, sitemap, Open Graph
+- ♿ **Accessible** — WCAG compliant
 
 </td>
 </tr>
 <tr>
 <td width="50%">
 
-### Content
-- **Blog Ready** — Categories, tags, reading time
-- **Documentation** — Sidebar + versioning
-- **API Reference** — REST endpoint docs
-- **CLI Reference** — Command documentation
-- **Search** — Lunr.js powered, Cmd+K shortcut
-- **Changelog** — Auto-fetch from GitHub releases
+### 📝 Content
+- 📰 **Blog Ready** — Categories, tags, reading time
+- 📚 **Documentation** — Sidebar + versioning
+- 📡 **API Reference** — REST endpoint docs
+- 💻 **CLI Reference** — Command documentation
+- 🔍 **Search** — Lunr.js powered, Cmd+K shortcut
+- 📋 **Changelog** — Auto-fetch from GitHub releases
 
 </td>
 <td width="50%">
 
-### Developer Experience
-- **Configurable** — Everything in `_config.yml`
-- **Pagination** — For blog, docs, and releases
-- **Badges** — Shields.io integration
-- **Stats Counter** — Animated number counters
-- **Tabs & Accordions** — Interactive components
-- **Auto Deploy** — GitHub Actions included
+### 🛠️ Developer Experience
+- ⚙️ **Configurable** — Everything in `_config.yml`
+- 📄 **Pagination** — For blog, docs, and releases
+- 🏷️ **Badges** — Shields.io integration
+- 📊 **Stats Counter** — Animated number counters
+- 🗂️ **Tabs & Accordions** — Interactive components
+- 🤖 **Auto Deploy** — GitHub Actions included
 
 </td>
 </tr>
@@ -97,9 +101,9 @@ The next evolution of Jekyll's classic Minima theme — now with dark mode, sear
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
-### Starting Fresh? Use the Template!
+### 🆕 Starting Fresh? Use the Template!
 
 <a href="https://github.com/E-Segments/minima-plus/generate">
   <img src="https://img.shields.io/badge/Use_This_Template-238636?style=for-the-badge&logo=github&logoColor=white" alt="Use Template">
@@ -108,11 +112,11 @@ The next evolution of Jekyll's classic Minima theme — now with dark mode, sear
 1. Click **"Use this template"** above
 2. Name your repo `username.github.io` (for personal site) or any name
 3. Clone → Edit `_config.yml` → Push
-4. Your site is live!
+4. 🎉 Your site is live!
 
 ---
 
-### Adding to Existing Repo? Use Remote Theme!
+### 📦 Adding to Existing Repo? Use Remote Theme!
 
 **Step 1:** Create `docs/_config.yml`:
 ```yaml
@@ -169,9 +173,9 @@ permalink: /coming-soon/
 
 ---
 
-## New Features
+## 🆕 New Features
 
-### Search (Cmd+K)
+### 🔍 Search (Cmd+K)
 
 Full-text search across posts, docs, and pages powered by Lunr.js.
 
@@ -187,7 +191,7 @@ theme_config:
     search: true
 ```
 
-### Pagination
+### 📄 Pagination
 
 Built-in pagination for blog posts using jekyll-paginate-v2.
 
@@ -204,7 +208,7 @@ pagination:
   permalink: '/page/:num/'
 ```
 
-### Changelog
+### 📋 Changelog
 
 Auto-fetch releases from GitHub API with search and filtering.
 
@@ -227,7 +231,7 @@ permalink: /changelog/
 ---
 ```
 
-### Badges (Shields.io)
+### 🏷️ Badges (Shields.io)
 
 Easy badge integration with Shields.io and Badgen.net.
 
@@ -252,7 +256,7 @@ Or use badge groups from data:
 {% include components/badge-group.html badges=site.data.badges.theme %}
 ```
 
-### Stats Counter
+### 📊 Stats Counter
 
 Animated number counters that count up when scrolled into view.
 
@@ -279,7 +283,59 @@ stats:
 
 Styles: `default`, `cards`, `minimal`
 
-### 404 Error Page
+### 🗂️ Tabs & Accordions
+
+Interactive tabbed content and collapsible sections.
+
+**Tabs:**
+```liquid
+{% include components/tabs.html id="demo" tabs="HTML,CSS,JS" %}
+<div data-tab-content="demo-0">HTML content</div>
+<div data-tab-content="demo-1">CSS content</div>
+<div data-tab-content="demo-2">JS content</div>
+{% include components/tabs.html id="demo" end=true %}
+```
+
+**Accordion:**
+```liquid
+{% include components/accordion.html items=page.faq %}
+```
+
+With front matter:
+```yaml
+faq:
+  - question: "What is Jekyll?"
+    answer: "A static site generator."
+  - question: "Is it free?"
+    answer: "Yes, completely free."
+```
+
+Styles: `default`, `bordered`, `separated` | Tab styles: `underline`, `pills`
+
+### 📚 Versioned Documentation
+
+Support multiple documentation versions with a dropdown selector.
+
+Configure in `_data/versions.yml`:
+```yaml
+current: "2.0"
+versions:
+  - number: "2.0"
+    name: "v2.0 (Latest)"
+    path: "/docs/"
+    latest: true
+  - number: "1.0"
+    name: "v1.0"
+    path: "/docs/v1/"
+```
+
+Features:
+- Version dropdown in docs sidebar
+- Warning banner for old versions
+- Automatic "latest" detection
+- localStorage preference saving
+
+### 🚫 404 Error Page
 
 Beautiful animated 404 page with:
 - Gradient animated "404" text
@@ -299,7 +355,7 @@ description: "Custom message here"
 ---
 ```
 
-### Coming Soon Page
+### 🚀 Coming Soon Page
 
 Pre-launch landing page with countdown timer and email capture.
 
@@ -330,9 +386,69 @@ Features:
 
 **Pre-launch tip:** Rename `coming-soon.html` to `index.html` until launch!
 
+### 📡 API Reference Layout
+
+Document REST APIs with method badges, parameters, and response codes.
+
+```yaml
+---
+layout: api
+title: API Reference
+api_version: "v1"
+base_url: "https://api.example.com/v1"
+endpoints:
+  - method: "GET"
+    path: "/users"
+    description: "List all users"
+    auth: "required"
+    params:
+      - name: "page"
+        type: "integer"
+        in: "query"
+    responses:
+      - status: 200
+        description: "Success"
+---
+```
+
+Features:
+- Method badges (GET, POST, PUT, DELETE)
+- Parameter tables (query, path, body)
+- Response status codes
+- Sidebar navigation
+
+### 💻 CLI Reference Layout
+
+Document command-line tools with arguments, options, and examples.
+
+```yaml
+---
+layout: cli
+title: CLI Reference
+cli_name: "mytool"
+cli_version: "1.0.0"
+commands:
+  - name: "init"
+    description: "Initialize a new project"
+    usage: "mytool init [options]"
+    options:
+      - flag: "-f, --force"
+        description: "Force overwrite"
+    examples:
+      - title: "Basic usage"
+        code: "mytool init my-project"
+---
+```
+
+Features:
+- Command documentation
+- Arguments and options tables
+- Code examples with output
+- Terminal-style headers
+
 ---
 
-## Color Themes
+## 🎨 Color Themes
 
 Change your entire site's color scheme with one line:
 
@@ -346,7 +462,7 @@ Available colors: `red`, `orange`, `amber`, `emerald`, `blue`, `violet`, `pink`,
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 your-site/
@@ -397,7 +513,7 @@ your-site/
 
 ---
 
-## Configuration
+## ⚙️ Configuration
 
 Full `_config.yml` options:
 
@@ -452,7 +568,7 @@ analytics:
 
 ---
 
-## Components
+## 🧩 Components
 
 ### Badges
 
@@ -496,7 +612,7 @@ analytics:
 
 ---
 
-## Deployment
+## 🚀 Deployment
 
 ### GitHub Pages (Automatic)
 
@@ -515,7 +631,7 @@ This template includes GitHub Actions for automatic deployment!
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Feel free to:
 
@@ -525,13 +641,13 @@ Contributions are welcome! Feel free to:
 
 ---
 
-## License
+## 📄 License
 
 MIT License — use it for anything! Free forever.
 
 ---
 
-## Credits
+## 💖 Credits
 
 Built with:
 
