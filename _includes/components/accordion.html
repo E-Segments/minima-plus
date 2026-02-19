@@ -33,23 +33,29 @@ Parameters:
 {% elsif include.items %}
 <div class="accordion {% if acc_style == 'separated' %}space-y-3{% elsif acc_style == 'bordered' %}border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden{% else %}divide-y divide-slate-200 dark:divide-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden{% endif %}"
      data-accordion="{{ acc_id }}"
-     data-multiple="{{ acc_multiple }}">
+     data-multiple="{{ acc_multiple }}"
+     role="presentation">
   {% for item in include.items %}
   {% assign item_title = item.question | default: item.title %}
   {% assign item_content = item.answer | default: item.content %}
   <div class="accordion-item {% if acc_style == 'separated' %}border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden{% endif %}">
-    <button type="button"
-            class="accordion-trigger w-full flex items-center justify-between px-5 py-4 text-left bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
-            aria-expanded="false"
-            aria-controls="panel-{{ acc_id }}-{{ forloop.index }}">
-      <span class="font-medium text-slate-900 dark:text-white">{{ item_title }}</span>
-      <svg class="accordion-icon w-5 h-5 text-slate-400 dark:text-slate-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-      </svg>
-    </button>
+    <h3 class="accordion-header m-0">
+      <button type="button"
+              id="trigger-{{ acc_id }}-{{ forloop.index }}"
+              class="accordion-trigger w-full flex items-center justify-between px-5 py-4 text-left bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+              aria-expanded="false"
+              aria-controls="panel-{{ acc_id }}-{{ forloop.index }}">
+        <span class="font-medium text-slate-900 dark:text-white">{{ item_title }}</span>
+        <svg class="accordion-icon w-5 h-5 text-slate-400 dark:text-slate-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+    </h3>
     <div id="panel-{{ acc_id }}-{{ forloop.index }}"
          class="accordion-panel hidden"
-         role="region">
+         role="region"
+         aria-labelledby="trigger-{{ acc_id }}-{{ forloop.index }}"
+         aria-hidden="true">
       <div class="px-5 pb-5 pt-0 text-slate-600 dark:text-slate-400">
         {{ item_content | markdownify }}
       </div>
@@ -67,26 +73,56 @@ Parameters:
   const allowMultiple = accordion.dataset.multiple === 'true';
   const triggers = accordion.querySelectorAll('.accordion-trigger');
 
-  triggers.forEach(trigger => {
+  triggers.forEach((trigger, index) => {
+    // Get the panel - it's the next sibling of the header (h3)
+    const header = trigger.parentElement;
+    const panel = header.nextElementSibling;
+
     trigger.addEventListener('click', () => {
-      const panel = trigger.nextElementSibling;
       const isOpen = trigger.getAttribute('aria-expanded') === 'true';
 
       // Close others if not multiple
       if (!allowMultiple && !isOpen) {
-        triggers.forEach(t => {
+        triggers.forEach((t, i) => {
           if (t !== trigger) {
+            const otherHeader = t.parentElement;
+            const otherPanel = otherHeader.nextElementSibling;
             t.setAttribute('aria-expanded', 'false');
             t.querySelector('.accordion-icon').style.transform = '';
-            t.nextElementSibling.classList.add('hidden');
+            otherPanel.classList.add('hidden');
+            otherPanel.setAttribute('aria-hidden', 'true');
           }
         });
       }
 
       // Toggle current
-      trigger.setAttribute('aria-expanded', !isOpen);
-      trigger.querySelector('.accordion-icon').style.transform = isOpen ? '' : 'rotate(180deg)';
+      const newState = !isOpen;
+      trigger.setAttribute('aria-expanded', newState);
+      trigger.querySelector('.accordion-icon').style.transform = newState ? 'rotate(180deg)' : '';
       panel.classList.toggle('hidden');
+      panel.setAttribute('aria-hidden', !newState);
+    });
+
+    // Keyboard navigation
+    trigger.addEventListener('keydown', (e) => {
+      const triggersArray = Array.from(triggers);
+      let newIndex = index;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        newIndex = (index + 1) % triggersArray.length;
+        triggersArray[newIndex].focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        newIndex = (index - 1 + triggersArray.length) % triggersArray.length;
+        triggersArray[newIndex].focus();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        triggersArray[0].focus();
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        triggersArray[triggersArray.length - 1].focus();
+      }
     });
   });
 })();
@@ -94,5 +130,6 @@ Parameters:
 {% else %}
 <div class="accordion {% if acc_style == 'separated' %}space-y-3{% elsif acc_style == 'bordered' %}border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden{% else %}divide-y divide-slate-200 dark:divide-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden{% endif %}"
      data-accordion="{{ acc_id }}"
-     data-multiple="{{ acc_multiple }}">
+     data-multiple="{{ acc_multiple }}"
+     role="presentation">
 {% endif %}

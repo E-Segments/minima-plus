@@ -2,6 +2,8 @@
 title: "Deployment"
 description: "Deploy your site to GitHub Pages, Netlify, or Vercel"
 order: 5
+parent: "Getting Started"
+version: "2.1"
 ---
 
 This guide covers deploying your Jekyll site to various hosting platforms.

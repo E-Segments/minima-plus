@@ -21,32 +21,74 @@ Or with HTML in tabs array from front matter:
 <script>
 (function() {
   const container = document.querySelector('[data-tabs="{{ include.id }}"]');
-  if (!container) return;
+  if (!container || container.dataset.initialized) return;
+  container.dataset.initialized = 'true';
 
   const buttons = container.querySelectorAll('[data-tab]');
   const contents = document.querySelectorAll('[data-tab-content^="{{ include.id }}-"]');
 
-  // Show first tab by default
-  if (contents.length > 0) {
-    contents[0].style.display = 'block';
+  // Setup tab panels with proper ARIA attributes
+  contents.forEach((content, index) => {
+    content.setAttribute('role', 'tabpanel');
+    content.setAttribute('id', 'panel-{{ include.id }}-' + index);
+    content.setAttribute('aria-labelledby', 'tab-{{ include.id }}-' + index);
+    content.setAttribute('tabindex', '0');
+    if (index === 0) {
+      content.style.display = 'block';
+      content.removeAttribute('hidden');
+    } else {
+      content.style.display = 'none';
+      content.setAttribute('hidden', '');
+    }
+  });
+
+  function activateTab(newIndex) {
+    buttons.forEach((b, i) => {
+      const isActive = i === newIndex;
+      b.classList.remove('tab-active', 'text-primary-600', 'dark:text-primary-400', 'border-primary-600', 'dark:border-primary-400');
+      b.classList.add('text-slate-500', 'dark:text-slate-400', 'border-transparent', 'hover:text-slate-700', 'dark:hover:text-slate-300');
+      b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      b.setAttribute('tabindex', isActive ? '0' : '-1');
+      if (isActive) {
+        b.classList.add('tab-active', 'text-primary-600', 'dark:text-primary-400', 'border-primary-600', 'dark:border-primary-400');
+        b.classList.remove('text-slate-500', 'dark:text-slate-400', 'border-transparent', 'hover:text-slate-700', 'dark:hover:text-slate-300');
+      }
+    });
+
+    contents.forEach((c, i) => {
+      if (i === newIndex) {
+        c.style.display = 'block';
+        c.removeAttribute('hidden');
+      } else {
+        c.style.display = 'none';
+        c.setAttribute('hidden', '');
+      }
+    });
   }
 
   buttons.forEach((btn, index) => {
-    btn.addEventListener('click', () => {
-      // Update buttons
-      buttons.forEach(b => {
-        b.classList.remove('tab-active', 'text-primary-600', 'dark:text-primary-400', 'border-primary-600', 'dark:border-primary-400');
-        b.classList.add('text-slate-500', 'dark:text-slate-400', 'border-transparent', 'hover:text-slate-700', 'dark:hover:text-slate-300');
-        b.setAttribute('aria-selected', 'false');
-      });
-      btn.classList.add('tab-active', 'text-primary-600', 'dark:text-primary-400', 'border-primary-600', 'dark:border-primary-400');
-      btn.classList.remove('text-slate-500', 'dark:text-slate-400', 'border-transparent', 'hover:text-slate-700', 'dark:hover:text-slate-300');
-      btn.setAttribute('aria-selected', 'true');
+    btn.addEventListener('click', () => activateTab(index));
 
-      // Update content
-      contents.forEach((c, i) => {
-        c.style.display = i === index ? 'block' : 'none';
-      });
+    // Keyboard navigation
+    btn.addEventListener('keydown', (e) => {
+      let newIndex = index;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        newIndex = (index + 1) % buttons.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        newIndex = (index - 1 + buttons.length) % buttons.length;
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        newIndex = 0;
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        newIndex = buttons.length - 1;
+      } else {
+        return;
+      }
+      activateTab(newIndex);
+      buttons[newIndex].focus();
     });
   });
 })();
@@ -59,14 +101,16 @@ Or with HTML in tabs array from front matter:
 
 <div class="tabs-container my-6" data-tabs="{{ tab_id }}">
   <!-- Tab buttons -->
-  <div class="tabs-header flex {% if tab_style == 'pills' %}gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg{% else %}border-b border-slate-200 dark:border-slate-700{% endif %}" role="tablist">
+  <div class="tabs-header flex {% if tab_style == 'pills' %}gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg{% else %}border-b border-slate-200 dark:border-slate-700{% endif %}" role="tablist" aria-label="{{ include.aria_label | default: 'Content tabs' }}">
     {% for label in tab_labels %}
     {% assign label_stripped = label | strip %}
     <button type="button"
+            id="tab-{{ tab_id }}-{{ forloop.index0 }}"
             data-tab="{{ tab_id }}-{{ forloop.index0 }}"
             role="tab"
             aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
             aria-controls="panel-{{ tab_id }}-{{ forloop.index0 }}"
+            tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
             class="{% if tab_style == 'pills' %}px-4 py-2 text-sm font-medium rounded-md transition-all {% if forloop.first %}bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm{% else %}text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300{% endif %}{% else %}px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-all {% if forloop.first %}tab-active text-primary-600 dark:text-primary-400 border-primary-600 dark:border-primary-400{% else %}text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600{% endif %}{% endif %}">
       {{ label_stripped }}
     </button>

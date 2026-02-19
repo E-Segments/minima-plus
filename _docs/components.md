@@ -2,6 +2,8 @@
 title: "Components"
 description: "Reusable UI components for your pages"
 order: 3
+parent: "Getting Started"
+version: "2.1"
 ---
 
 This theme includes several reusable components you can use in your pages.
@@ -348,30 +350,6 @@ Or use the `cli` layout for a full CLI reference page.
 
 ---
 
-## Version Selector
-
-Show a dropdown to switch between documentation versions.
-
-```liquid
-{% raw %}{% include components/version-selector.html %}{% endraw %}
-```
-
-Configure versions in `_data/versions.yml`:
-
-```yaml
-current: "2.0"
-versions:
-  - number: "2.0"
-    name: "v2.0 (Latest)"
-    path: "/docs/"
-    latest: true
-  - number: "1.0"
-    name: "v1.0"
-    path: "/docs/v1/"
-```
-
----
-
 ## Stats Counter
 
 Animated number counters that count up when scrolled into view.
@@ -441,3 +419,11 @@ You can use these utility classes in your markdown:
 - `.endpoint-card` - API endpoint documentation
 - `.cli-command` - CLI command documentation
 - `.stats-counter` - Animated statistics counters
+
+---
+
+## Next Steps
+
+- Learn about [Accessibility](/docs/accessibility/) features and ARIA support
+- See the [Customization Guide](/docs/customization/) for advanced styling
+- Check the [Troubleshooting Guide](/docs/troubleshooting/) for common issues

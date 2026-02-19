@@ -2,6 +2,8 @@
 title: "Configuration"
 description: "Learn how to configure colors, fonts, and features"
 order: 4
+parent: "Getting Started"
+version: "2.1"
 ---
 
 This guide covers all configuration options available in the theme.

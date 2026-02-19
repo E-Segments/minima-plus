@@ -54,36 +54,90 @@ Or inline:
   // Create tab UI
   const header = document.createElement('div');
   header.className = 'flex bg-slate-800 dark:bg-slate-900 rounded-t-lg overflow-hidden';
+  header.setAttribute('role', 'tablist');
+  header.setAttribute('aria-label', 'Code examples');
 
   const codeContainer = document.createElement('div');
   codeContainer.className = 'code-tabs-content';
+
+  const tabId = '{{ tab_id }}';
+
+  function activateTab(newIndex) {
+    header.querySelectorAll('button').forEach((b, i) => {
+      const isActive = i === newIndex;
+      b.className = 'code-tab-btn px-4 py-2 text-sm font-medium transition-colors ' +
+        (isActive
+          ? 'bg-slate-700 dark:bg-slate-800 text-white'
+          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
+      b.setAttribute('aria-selected', isActive);
+      b.setAttribute('tabindex', isActive ? '0' : '-1');
+    });
+    codeContainer.querySelectorAll('pre').forEach((p, i) => {
+      const isActive = i === newIndex;
+      p.style.display = isActive ? 'block' : 'none';
+      if (isActive) {
+        p.removeAttribute('hidden');
+      } else {
+        p.setAttribute('hidden', '');
+      }
+    });
+  }
 
   tabsData.forEach((tab, index) => {
     // Button
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'px-4 py-2 text-sm font-medium transition-colors ' +
+    btn.id = 'dyn-code-tab-' + tabId + '-' + index;
+    btn.className = 'code-tab-btn px-4 py-2 text-sm font-medium transition-colors ' +
       (index === 0
         ? 'bg-slate-700 dark:bg-slate-800 text-white'
         : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
     btn.textContent = tab.label;
-    btn.onclick = () => {
-      header.querySelectorAll('button').forEach((b, i) => {
-        b.className = 'px-4 py-2 text-sm font-medium transition-colors ' +
-          (i === index
-            ? 'bg-slate-700 dark:bg-slate-800 text-white'
-            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
-      });
-      codeContainer.querySelectorAll('pre').forEach((p, i) => {
-        p.style.display = i === index ? 'block' : 'none';
-      });
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+    btn.setAttribute('aria-controls', 'dyn-code-panel-' + tabId + '-' + index);
+    btn.setAttribute('tabindex', index === 0 ? '0' : '-1');
+
+    btn.onclick = () => activateTab(index);
+
+    btn.onkeydown = (e) => {
+      const buttons = Array.from(header.querySelectorAll('button'));
+      let newIndex = index;
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        newIndex = (index + 1) % buttons.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        newIndex = (index - 1 + buttons.length) % buttons.length;
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        newIndex = 0;
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        newIndex = buttons.length - 1;
+      } else {
+        return;
+      }
+
+      activateTab(newIndex);
+      buttons[newIndex].focus();
     };
+
     header.appendChild(btn);
 
     // Code block
     const pre = document.createElement('pre');
+    pre.id = 'dyn-code-panel-' + tabId + '-' + index;
     pre.className = 'language-' + tab.lang + ' !rounded-t-none !mt-0';
     pre.style.display = index === 0 ? 'block' : 'none';
+    pre.setAttribute('role', 'tabpanel');
+    pre.setAttribute('aria-labelledby', 'dyn-code-tab-' + tabId + '-' + index);
+    pre.setAttribute('tabindex', '0');
+    if (index !== 0) {
+      pre.setAttribute('hidden', '');
+    }
+
     const code = document.createElement('code');
     code.className = 'language-' + tab.lang;
     code.textContent = tab.code;
@@ -102,11 +156,16 @@ Or inline:
 </script>
 {% elsif include.tabs %}
 <div class="code-tabs my-6 not-prose" data-code-tabs="{{ tab_id }}">
-  <div class="flex bg-slate-800 dark:bg-slate-900 rounded-t-lg overflow-hidden">
+  <div class="flex bg-slate-800 dark:bg-slate-900 rounded-t-lg overflow-hidden" role="tablist" aria-label="{{ include.aria_label | default: 'Code examples' }}">
     {% for tab in include.tabs %}
     <button type="button"
+            id="code-tab-{{ tab_id }}-{{ forloop.index0 }}"
             onclick="switchCodeTab('{{ tab_id }}', {{ forloop.index0 }})"
             class="code-tab-btn px-4 py-2 text-sm font-medium transition-colors {% if forloop.first %}bg-slate-700 dark:bg-slate-800 text-white{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-700/50{% endif %}"
+            role="tab"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-controls="code-panel-{{ tab_id }}-{{ forloop.index0 }}"
+            tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
             data-index="{{ forloop.index0 }}">
       {{ tab.label }}
     </button>
@@ -114,7 +173,13 @@ Or inline:
   </div>
   <div class="code-tabs-content">
     {% for tab in include.tabs %}
-    <pre class="language-{{ tab.language | default: 'text' }} !rounded-t-none !mt-0" style="{% unless forloop.first %}display: none;{% endunless %}"><code class="language-{{ tab.language | default: 'text' }}">{{ tab.code | escape }}</code></pre>
+    <pre id="code-panel-{{ tab_id }}-{{ forloop.index0 }}"
+         class="language-{{ tab.language | default: 'text' }} !rounded-t-none !mt-0"
+         role="tabpanel"
+         aria-labelledby="code-tab-{{ tab_id }}-{{ forloop.index0 }}"
+         tabindex="0"
+         {% unless forloop.first %}hidden{% endunless %}
+         style="{% unless forloop.first %}display: none;{% endunless %}"><code class="language-{{ tab.language | default: 'text' }}">{{ tab.code | escape }}</code></pre>
     {% endfor %}
   </div>
 </div>
@@ -122,13 +187,55 @@ Or inline:
 function switchCodeTab(id, index) {
   const container = document.querySelector('[data-code-tabs="' + id + '"]');
   container.querySelectorAll('.code-tab-btn').forEach((btn, i) => {
+    const isActive = i === index;
     btn.className = 'code-tab-btn px-4 py-2 text-sm font-medium transition-colors ' +
-      (i === index ? 'bg-slate-700 dark:bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
+      (isActive ? 'bg-slate-700 dark:bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
+    btn.setAttribute('aria-selected', isActive);
+    btn.setAttribute('tabindex', isActive ? '0' : '-1');
   });
   container.querySelectorAll('.code-tabs-content pre').forEach((pre, i) => {
-    pre.style.display = i === index ? 'block' : 'none';
+    const isActive = i === index;
+    pre.style.display = isActive ? 'block' : 'none';
+    if (isActive) {
+      pre.removeAttribute('hidden');
+    } else {
+      pre.setAttribute('hidden', '');
+    }
   });
 }
+
+// Add keyboard navigation for code tabs
+document.addEventListener('keydown', function(e) {
+  const btn = e.target;
+  if (!btn.classList.contains('code-tab-btn')) return;
+
+  const container = btn.closest('[data-code-tabs]');
+  if (!container) return;
+
+  const buttons = Array.from(container.querySelectorAll('.code-tab-btn'));
+  const currentIndex = buttons.indexOf(btn);
+  let newIndex = currentIndex;
+
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    newIndex = (currentIndex + 1) % buttons.length;
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    newIndex = (currentIndex - 1 + buttons.length) % buttons.length;
+  } else if (e.key === 'Home') {
+    e.preventDefault();
+    newIndex = 0;
+  } else if (e.key === 'End') {
+    e.preventDefault();
+    newIndex = buttons.length - 1;
+  } else {
+    return;
+  }
+
+  const tabId = container.dataset.codeTabs;
+  switchCodeTab(tabId, newIndex);
+  buttons[newIndex].focus();
+});
 </script>
 {% else %}
 <div class="code-tabs my-6 not-prose" data-code-tabs="{{ tab_id }}">

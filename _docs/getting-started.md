@@ -2,6 +2,8 @@
 title: "Getting Started"
 description: "Learn how to install and configure the Jekyll theme"
 order: 1
+parent: "Getting Started"
+version: "2.1"
 ---
 
 This guide will help you get started with this Jekyll theme in just a few minutes.

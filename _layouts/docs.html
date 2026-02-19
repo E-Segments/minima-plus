@@ -8,31 +8,153 @@ layout: default
       <!-- Sidebar -->
       {% if site.theme_config.layout.sidebar %}
       <aside class="hidden lg:block lg:col-span-3 xl:col-span-2">
-        <nav class="sticky top-24 space-y-1 pr-4">
-          <!-- Version selector -->
-          {% if site.data.versions.versions.size > 1 %}
-          <div class="mb-4 px-3">
-            {% include components/version-selector.html %}
+        <nav class="sticky top-24 space-y-1 pr-4" aria-label="Documentation navigation">
+          {% comment %}
+          Group docs by parent field, with ungrouped docs shown first.
+          Sections are ordered by the minimum 'order' value of their docs.
+          Docs within sections are sorted by 'order' field.
+          {% endcomment %}
+          {% assign all_docs = site.docs | sort: "order" %}
+          {% assign ungrouped_docs = all_docs | where: "parent", nil | sort: "order" %}
+
+          {% comment %} Get unique parents in order of first occurrence (by min order) {% endcomment %}
+          {% assign parents = all_docs | map: "parent" | compact | uniq %}
+
+          {% comment %} Show ungrouped docs first {% endcomment %}
+          {% if ungrouped_docs.size > 0 %}
+          <div class="sidebar-section" data-section="ungrouped">
+            {% for doc in ungrouped_docs %}
+            <a href="{{ doc.url | relative_url }}"
+               class="sidebar-link flex items-center px-3 py-2.5 text-sm rounded-lg transition-all
+                      {% if page.url == doc.url %}
+                      text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 font-semibold border-l-2 border-primary-500
+                      {% else %}
+                      text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60
+                      {% endif %}">
+              {{ doc.title }}
+            </a>
+            {% endfor %}
           </div>
           {% endif %}
 
-          <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-3">
-            Documentation
-          </h3>
-          {% assign docs = site.docs | sort: "order" %}
-          {% for doc in docs %}
-          <a href="{{ doc.url | relative_url }}"
-             class="flex items-center px-3 py-2.5 text-sm rounded-lg transition-all
-                    {% if page.url == doc.url %}
-                    text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 font-semibold border-l-2 border-primary-500
-                    {% else %}
-                    text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60
-                    {% endif %}">
-            {{ doc.title }}
-          </a>
+          {% comment %} Show grouped sections - sorted by minimum doc order {% endcomment %}
+          {% for parent in parents %}
+          {% assign section_docs = all_docs | where: "parent", parent | sort: "order" %}
+          {% assign section_id = parent | slugify %}
+          {% assign has_active = false %}
+          {% for doc in section_docs %}
+            {% if page.url == doc.url %}
+              {% assign has_active = true %}
+            {% endif %}
+          {% endfor %}
+
+          <div class="sidebar-section mt-4" data-section="{{ section_id }}">
+            <button type="button"
+                    class="sidebar-section-header w-full flex items-center justify-between px-3 py-2 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider hover:text-slate-600 dark:hover:text-slate-400 transition-colors"
+                    aria-expanded="{{ has_active }}"
+                    aria-controls="section-{{ section_id }}"
+                    data-sidebar-toggle="{{ section_id }}">
+              <span>{{ parent }}</span>
+              <svg class="sidebar-chevron w-4 h-4 transition-transform duration-200 {% if has_active %}rotate-180{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div id="section-{{ section_id }}"
+                 class="sidebar-section-items overflow-hidden transition-all duration-200 {% unless has_active %}hidden{% endunless %}"
+                 role="region"
+                 aria-labelledby="header-{{ section_id }}">
+              {% for doc in section_docs %}
+              <a href="{{ doc.url | relative_url }}"
+                 class="sidebar-link flex items-center px-3 py-2.5 text-sm rounded-lg transition-all ml-2
+                        {% if page.url == doc.url %}
+                        text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 font-semibold border-l-2 border-primary-500
+                        {% else %}
+                        text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60
+                        {% endif %}">
+                {{ doc.title }}
+              </a>
+              {% endfor %}
+            </div>
+          </div>
           {% endfor %}
         </nav>
       </aside>
+
+      <script>
+      (function() {
+        // Collapsible sidebar functionality
+        const STORAGE_KEY = 'docs-sidebar-state';
+
+        function loadState() {
+          try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+          } catch (e) {
+            return {};
+          }
+        }
+
+        function saveState(state) {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          } catch (e) {}
+        }
+
+        function toggleSection(sectionId, forceOpen) {
+          const header = document.querySelector(`[data-sidebar-toggle="${sectionId}"]`);
+          const content = document.getElementById(`section-${sectionId}`);
+          const chevron = header?.querySelector('.sidebar-chevron');
+
+          if (!header || !content) return;
+
+          const isCurrentlyOpen = header.getAttribute('aria-expanded') === 'true';
+          const shouldOpen = forceOpen !== undefined ? forceOpen : !isCurrentlyOpen;
+
+          header.setAttribute('aria-expanded', shouldOpen);
+
+          if (shouldOpen) {
+            content.classList.remove('hidden');
+            chevron?.classList.add('rotate-180');
+          } else {
+            content.classList.add('hidden');
+            chevron?.classList.remove('rotate-180');
+          }
+
+          // Save state
+          const state = loadState();
+          state[sectionId] = shouldOpen;
+          saveState(state);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+          const state = loadState();
+          const toggles = document.querySelectorAll('[data-sidebar-toggle]');
+
+          toggles.forEach(toggle => {
+            const sectionId = toggle.dataset.sidebarToggle;
+            const hasActiveLink = toggle.closest('.sidebar-section')?.querySelector('.border-primary-500');
+
+            // Restore saved state, but keep active sections open
+            if (hasActiveLink) {
+              toggleSection(sectionId, true);
+            } else if (state[sectionId] !== undefined) {
+              toggleSection(sectionId, state[sectionId]);
+            }
+
+            // Click handler
+            toggle.addEventListener('click', () => toggleSection(sectionId));
+
+            // Keyboard handler
+            toggle.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleSection(sectionId);
+              }
+            });
+          });
+        });
+      })();
+      </script>
       {% endif %}
 
       <!-- Main Content -->
@@ -44,24 +166,45 @@ layout: default
           </label>
           <select id="docs-nav"
                   onchange="window.location.href = this.value"
-                  class="block w-full rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 py-3">
-            {% assign docs = site.docs | sort: "order" %}
-            {% for doc in docs %}
+                  class="block w-full rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 py-3"
+                  aria-label="Documentation navigation">
+            {% assign mobile_docs = site.docs | sort: "order" %}
+            {% assign mobile_ungrouped = mobile_docs | where: "parent", nil | sort: "order" %}
+            {% assign mobile_parents = mobile_docs | map: "parent" | compact | uniq %}
+
+            {% comment %} Ungrouped docs first {% endcomment %}
+            {% for doc in mobile_ungrouped %}
             <option value="{{ doc.url | relative_url }}" {% if page.url == doc.url %}selected{% endif %}>
               {{ doc.title }}
             </option>
+            {% endfor %}
+
+            {% comment %} Grouped docs with optgroup {% endcomment %}
+            {% for parent in mobile_parents %}
+            {% assign section_docs = mobile_docs | where: "parent", parent | sort: "order" %}
+            <optgroup label="{{ parent }}">
+              {% for doc in section_docs %}
+              <option value="{{ doc.url | relative_url }}" {% if page.url == doc.url %}selected{% endif %}>
+                {{ doc.title }}
+              </option>
+              {% endfor %}
+            </optgroup>
             {% endfor %}
           </select>
         </div>
 
         <article class="max-w-3xl">
-          <!-- Version warning for old docs -->
-          {% include components/version-warning.html %}
-
           <header class="mb-8 lg:mb-10">
-            <h1 class="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">
-              {{ page.title }}
-            </h1>
+            <div class="flex items-center gap-3 mb-2">
+              <h1 class="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">
+                {{ page.title }}
+              </h1>
+              {% if page.version %}
+              <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 rounded">
+                v{{ page.version }}
+              </span>
+              {% endif %}
+            </div>
             {% if page.description %}
             <p class="mt-4 text-lg lg:text-xl text-slate-600 dark:text-slate-400 leading-relaxed">
               {{ page.description }}
@@ -84,14 +227,14 @@ layout: default
           </div>
 
           <!-- Doc Navigation -->
-          <nav class="mt-12 lg:mt-16 pt-8 border-t border-slate-200 dark:border-slate-800">
+          <nav class="mt-12 lg:mt-16 pt-8 border-t border-slate-200 dark:border-slate-800" aria-label="Documentation pagination">
             <div class="grid sm:grid-cols-2 gap-4">
-              {% assign docs = site.docs | sort: "order" %}
+              {% assign nav_docs = site.docs | sort: "order" %}
               {% assign prev_doc = nil %}
               {% assign next_doc = nil %}
               {% assign found_current = false %}
 
-              {% for doc in docs %}
+              {% for doc in nav_docs %}
                 {% if found_current and next_doc == nil %}
                   {% assign next_doc = doc %}
                 {% endif %}

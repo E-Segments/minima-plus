@@ -41,20 +41,24 @@
   {%- assign item_class = "text-center p-4 border-l-2 border-blue-500 dark:border-blue-400" -%}
 {%- endif -%}
 
-<div class="stats-counter {{ container_class }}" id="{{ stats_id }}" data-duration="{{ stats_duration }}">
+<div class="stats-counter {{ container_class }}" id="{{ stats_id }}" data-duration="{{ stats_duration }}" role="group" aria-label="Statistics">
   {%- if stats_array -%}
     {%- for stat in stats_array -%}
-      <div class="{{ item_class }}">
+      {%- assign full_value = stat.prefix | append: stat.value | append: stat.suffix -%}
+      <div class="{{ item_class }}" role="figure" aria-label="{{ full_value }} {{ stat.label }}">
         <div class="stat-value text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1"
              data-target="{{ stat.value }}"
              data-prefix="{{ stat.prefix | default: '' }}"
              data-suffix="{{ stat.suffix | default: '' }}"
-             data-decimals="{{ stat.decimals | default: 0 }}">
+             data-decimals="{{ stat.decimals | default: 0 }}"
+             data-label="{{ stat.label }}"
+             aria-hidden="true">
           {{ stat.prefix }}0{{ stat.suffix }}
         </div>
-        <div class="stat-label text-sm md:text-base text-gray-600 dark:text-gray-400">
+        <div class="stat-label text-sm md:text-base text-gray-600 dark:text-gray-400" aria-hidden="true">
           {{ stat.label }}
         </div>
+        <span class="sr-only">{{ full_value }} {{ stat.label }}</span>
       </div>
     {%- endfor -%}
   {%- else -%}
@@ -62,18 +66,21 @@
       {%- assign parts = stat_str | split: ":" -%}
       {%- assign stat_value = parts[0] | strip -%}
       {%- assign stat_label = parts[1] | strip -%}
-      <div class="{{ item_class }}">
+      <div class="{{ item_class }}" role="figure" aria-label="{{ stat_value }} {{ stat_label }}">
         <div class="stat-value text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1"
              data-target="{{ stat_value }}"
              data-prefix=""
              data-suffix=""
              data-decimals="0"
-             data-raw="{{ stat_value }}">
+             data-raw="{{ stat_value }}"
+             data-label="{{ stat_label }}"
+             aria-hidden="true">
           0
         </div>
-        <div class="stat-label text-sm md:text-base text-gray-600 dark:text-gray-400">
+        <div class="stat-label text-sm md:text-base text-gray-600 dark:text-gray-400" aria-hidden="true">
           {{ stat_label }}
         </div>
+        <span class="sr-only">{{ stat_value }} {{ stat_label }}</span>
       </div>
     {%- endfor -%}
   {%- endif -%}

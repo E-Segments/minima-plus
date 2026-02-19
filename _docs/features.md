@@ -2,6 +2,8 @@
 title: "Features"
 description: "Learn about search, pagination, changelog, and badges"
 order: 2
+parent: "Getting Started"
+version: "2.1"
 ---
 
 Minima+ includes several powerful features to enhance your Jekyll site.
