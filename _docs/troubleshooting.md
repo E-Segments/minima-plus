@@ -55,13 +55,7 @@ Liquid syntax error: Unknown tag 'raw'
 ```
 
 **Solution:**
-This usually means you're using Liquid tags in a context where they're not supported. Wrap code examples in `{% raw %}{% raw %}{% endraw %}...{% raw %}{% endraw %}{% endraw %}`:
-
-```liquid
-{% raw %}{% raw %}
-{% include components/card.html %}
-{% endraw %}{% endraw %}
-```
+This usually means you're using Liquid tags in a context where they're not supported. Wrap code examples in raw/endraw tags to prevent Liquid processing.
 
 ### YAML Front Matter Error
 
