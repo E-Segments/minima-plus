@@ -46,8 +46,15 @@
       {% endfor %}
     </div>
 
-    <!-- Bottom bar -->
+    <!-- Funding/Sponsorship -->
+    {% if site.funding.enabled %}
     <div class="mt-12 lg:mt-16 pt-8 border-t border-slate-200 dark:border-slate-800">
+      {% include components/funding.html %}
+    </div>
+    {% endif %}
+
+    <!-- Bottom bar -->
+    <div class="mt-8 lg:mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
       <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
         <p class="text-sm text-slate-500 dark:text-slate-500">
           &copy; {{ site.data.footer.copyright | default: site.time | date: '%Y' }} {{ site.title }}. All rights reserved.

@@ -111,6 +111,28 @@ analytics:
   google_analytics: ""
   plausible: ""
 
+# Funding/Sponsorship
+# Support the maintainer with multiple options
+funding:
+  enabled: true
+  title: "Support this project"
+  description: "Help keep this project maintained and growing"
+  links:
+    - name: "Buy Me a Coffee"
+      url: "https://buymeacoffee.com/esegments"
+      icon: "coffee"
+      color: "#FFDD00"
+      text_color: "#000000"
+    - name: "GitHub Sponsors"
+      url: "https://github.com/sponsors/E-Segments"
+      icon: "github"
+      color: "#EA4AAA"
+    - name: "PayPal"
+      url: "https://paypal.me/esegments"
+      icon: "paypal"
+      color: "#00457C"
+    # More options: kofi, patreon, opencollective, liberapay, bitcoin, custom
+
 # Exclude from build
 exclude:
   - Gemfile
