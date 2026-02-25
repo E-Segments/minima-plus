@@ -29,6 +29,8 @@ ehthumbs.db
 # Node (if using build tools)
 node_modules/
 package-lock.json
+test-results/
+playwright-report/
 
 # Environment
 .env

@@ -1,5 +1,6 @@
 {% comment %}
 Code Tabs Component - Tabbed code blocks for multiple languages/package managers
+Supports synchronization across all code tabs on the same page.
 
 Usage in front matter:
   code_examples:
@@ -9,9 +10,6 @@ Usage in front matter:
     - label: "yarn"
       language: "bash"
       code: "yarn add package-name"
-    - label: "pnpm"
-      language: "bash"
-      code: "pnpm add package-name"
 
 Then include:
   {% include components/code-tabs.html tabs=page.code_examples id="install" %}
@@ -20,9 +18,6 @@ Or inline:
   {% include components/code-tabs.html id="example" %}
   <div data-code-tab="example" data-label="JavaScript" data-lang="javascript">
   console.log('Hello');
-  </div>
-  <div data-code-tab="example" data-label="Python" data-lang="python">
-  print('Hello')
   </div>
   {% include components/code-tabs.html id="example" end=true %}
 {% endcomment %}
@@ -40,7 +35,6 @@ Or inline:
   const rawTabs = container.querySelectorAll('[data-code-tab="{{ tab_id }}"]');
   if (rawTabs.length === 0) return;
 
-  // Build tabs from raw content
   const tabsData = [];
   rawTabs.forEach(tab => {
     tabsData.push({
@@ -51,7 +45,6 @@ Or inline:
     tab.remove();
   });
 
-  // Create tab UI
   const header = document.createElement('div');
   header.className = 'flex bg-slate-800 dark:bg-slate-900 rounded-t-lg overflow-hidden';
   header.setAttribute('role', 'tablist');
@@ -62,81 +55,48 @@ Or inline:
 
   const tabId = '{{ tab_id }}';
 
-  function activateTab(newIndex) {
-    header.querySelectorAll('button').forEach((b, i) => {
+  function activateTab(newIndex, shouldBroadcast = true) {
+    const buttons = header.querySelectorAll('button');
+    buttons.forEach((b, i) => {
       const isActive = i === newIndex;
       b.className = 'code-tab-btn px-4 py-2 text-sm font-medium transition-colors ' +
-        (isActive
-          ? 'bg-slate-700 dark:bg-slate-800 text-white'
-          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
+        (isActive ? 'bg-slate-700 dark:bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
       b.setAttribute('aria-selected', isActive);
       b.setAttribute('tabindex', isActive ? '0' : '-1');
     });
     codeContainer.querySelectorAll('pre').forEach((p, i) => {
       const isActive = i === newIndex;
       p.style.display = isActive ? 'block' : 'none';
-      if (isActive) {
-        p.removeAttribute('hidden');
-      } else {
-        p.setAttribute('hidden', '');
-      }
+      if (isActive) p.removeAttribute('hidden');
+      else p.setAttribute('hidden', '');
     });
+
+    if (shouldBroadcast && window.codeTabState) {
+      window.codeTabState.broadcast(buttons[newIndex].textContent.trim());
+    }
   }
 
+  if (!window.switchCodeTab_internal) window.switchCodeTab_internal = {};
+  window.switchCodeTab_internal[tabId] = activateTab;
+
   tabsData.forEach((tab, index) => {
-    // Button
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.id = 'dyn-code-tab-' + tabId + '-' + index;
     btn.className = 'code-tab-btn px-4 py-2 text-sm font-medium transition-colors ' +
-      (index === 0
-        ? 'bg-slate-700 dark:bg-slate-800 text-white'
-        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
+      (index === 0 ? 'bg-slate-700 dark:bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
     btn.textContent = tab.label;
     btn.setAttribute('role', 'tab');
     btn.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
-    btn.setAttribute('aria-controls', 'dyn-code-panel-' + tabId + '-' + index);
     btn.setAttribute('tabindex', index === 0 ? '0' : '-1');
-
     btn.onclick = () => activateTab(index);
-
-    btn.onkeydown = (e) => {
-      const buttons = Array.from(header.querySelectorAll('button'));
-      let newIndex = index;
-
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        newIndex = (index + 1) % buttons.length;
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        newIndex = (index - 1 + buttons.length) % buttons.length;
-      } else if (e.key === 'Home') {
-        e.preventDefault();
-        newIndex = 0;
-      } else if (e.key === 'End') {
-        e.preventDefault();
-        newIndex = buttons.length - 1;
-      } else {
-        return;
-      }
-
-      activateTab(newIndex);
-      buttons[newIndex].focus();
-    };
-
     header.appendChild(btn);
 
-    // Code block
     const pre = document.createElement('pre');
-    pre.id = 'dyn-code-panel-' + tabId + '-' + index;
     pre.className = 'language-' + tab.lang + ' !rounded-t-none !mt-0';
     pre.style.display = index === 0 ? 'block' : 'none';
     pre.setAttribute('role', 'tabpanel');
-    pre.setAttribute('aria-labelledby', 'dyn-code-tab-' + tabId + '-' + index);
     pre.setAttribute('tabindex', '0');
-    if (index !== 0) {
-      pre.setAttribute('hidden', '');
-    }
+    if (index !== 0) pre.setAttribute('hidden', '');
 
     const code = document.createElement('code');
     code.className = 'language-' + tab.lang;
@@ -144,10 +104,7 @@ Or inline:
     pre.appendChild(code);
     codeContainer.appendChild(pre);
 
-    // Highlight if Prism is available
-    if (window.Prism) {
-      Prism.highlightElement(code);
-    }
+    if (window.Prism) Prism.highlightElement(code);
   });
 
   container.appendChild(header);
@@ -156,87 +113,120 @@ Or inline:
 </script>
 {% elsif include.tabs %}
 <div class="code-tabs my-6 not-prose" data-code-tabs="{{ tab_id }}">
-  <div class="flex bg-slate-800 dark:bg-slate-900 rounded-t-lg overflow-hidden" role="tablist" aria-label="{{ include.aria_label | default: 'Code examples' }}">
+  <div class="flex bg-slate-800 dark:bg-slate-900 rounded-t-lg overflow-hidden" role="tablist">
     {% for tab in include.tabs %}
     <button type="button"
-            id="code-tab-{{ tab_id }}-{{ forloop.index0 }}"
             onclick="switchCodeTab('{{ tab_id }}', {{ forloop.index0 }})"
             class="code-tab-btn px-4 py-2 text-sm font-medium transition-colors {% if forloop.first %}bg-slate-700 dark:bg-slate-800 text-white{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-700/50{% endif %}"
             role="tab"
             aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
-            aria-controls="code-panel-{{ tab_id }}-{{ forloop.index0 }}"
-            tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
-            data-index="{{ forloop.index0 }}">
+            tabindex="{% if forloop.first %}0{% else %}-1{% endif %}">
       {{ tab.label }}
     </button>
     {% endfor %}
   </div>
   <div class="code-tabs-content">
     {% for tab in include.tabs %}
-    <pre id="code-panel-{{ tab_id }}-{{ forloop.index0 }}"
-         class="language-{{ tab.language | default: 'text' }} !rounded-t-none !mt-0"
+    <pre class="language-{{ tab.language | default: 'text' }} !rounded-t-none !mt-0"
          role="tabpanel"
-         aria-labelledby="code-tab-{{ tab_id }}-{{ forloop.index0 }}"
          tabindex="0"
          {% unless forloop.first %}hidden{% endunless %}
          style="{% unless forloop.first %}display: none;{% endunless %}"><code class="language-{{ tab.language | default: 'text' }}">{{ tab.code | escape }}</code></pre>
     {% endfor %}
   </div>
 </div>
-<script>
-function switchCodeTab(id, index) {
-  const container = document.querySelector('[data-code-tabs="' + id + '"]');
-  container.querySelectorAll('.code-tab-btn').forEach((btn, i) => {
-    const isActive = i === index;
-    btn.className = 'code-tab-btn px-4 py-2 text-sm font-medium transition-colors ' +
-      (isActive ? 'bg-slate-700 dark:bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
-    btn.setAttribute('aria-selected', isActive);
-    btn.setAttribute('tabindex', isActive ? '0' : '-1');
-  });
-  container.querySelectorAll('.code-tabs-content pre').forEach((pre, i) => {
-    const isActive = i === index;
-    pre.style.display = isActive ? 'block' : 'none';
-    if (isActive) {
-      pre.removeAttribute('hidden');
-    } else {
-      pre.setAttribute('hidden', '');
-    }
-  });
-}
-
-// Add keyboard navigation for code tabs
-document.addEventListener('keydown', function(e) {
-  const btn = e.target;
-  if (!btn.classList.contains('code-tab-btn')) return;
-
-  const container = btn.closest('[data-code-tabs]');
-  if (!container) return;
-
-  const buttons = Array.from(container.querySelectorAll('.code-tab-btn'));
-  const currentIndex = buttons.indexOf(btn);
-  let newIndex = currentIndex;
-
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-    e.preventDefault();
-    newIndex = (currentIndex + 1) % buttons.length;
-  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-    e.preventDefault();
-    newIndex = (currentIndex - 1 + buttons.length) % buttons.length;
-  } else if (e.key === 'Home') {
-    e.preventDefault();
-    newIndex = 0;
-  } else if (e.key === 'End') {
-    e.preventDefault();
-    newIndex = buttons.length - 1;
-  } else {
-    return;
-  }
-
-  const tabId = container.dataset.codeTabs;
-  switchCodeTab(tabId, newIndex);
-  buttons[newIndex].focus();
-});
-</script>
 {% else %}
 <div class="code-tabs my-6 not-prose" data-code-tabs="{{ tab_id }}">
 {% endif %}
+
+<script>
+(function() {
+  if (window.codeTabSyncInitialized) return;
+  window.codeTabSyncInitialized = true;
+
+  window.codeTabState = {
+    broadcast: function(label) {
+      window.dispatchEvent(new CustomEvent('codeTabSelected', { detail: { label: label } }));
+    }
+  };
+
+  window.switchCodeTab = function(id, index, shouldBroadcast = true) {
+    if (window.switchCodeTab_internal && window.switchCodeTab_internal[id]) {
+      window.switchCodeTab_internal[id](index, shouldBroadcast);
+      return;
+    }
+
+    const container = document.querySelector('[data-code-tabs="' + id + '"]');
+    if (!container) return;
+
+    const buttons = container.querySelectorAll('.code-tab-btn');
+    if (index < 0 || index >= buttons.length) return;
+
+    buttons.forEach((btn, i) => {
+      const isActive = i === index;
+      btn.className = 'code-tab-btn px-4 py-2 text-sm font-medium transition-colors ' +
+        (isActive ? 'bg-slate-700 dark:bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50');
+      btn.setAttribute('aria-selected', isActive);
+      btn.setAttribute('tabindex', isActive ? '0' : '-1');
+    });
+
+    const panels = container.querySelectorAll('.code-tabs-content pre');
+    panels.forEach((pre, i) => {
+      const isActive = i === index;
+      pre.style.display = isActive ? 'block' : 'none';
+      if (isActive) pre.removeAttribute('hidden');
+      else pre.setAttribute('hidden', '');
+    });
+
+    if (shouldBroadcast) {
+      window.codeTabState.broadcast(buttons[index].textContent.trim());
+    }
+  };
+
+  window.addEventListener('codeTabSelected', (e) => {
+    const label = e.detail.label;
+    document.querySelectorAll('[data-code-tabs]').forEach(container => {
+      const buttons = Array.from(container.querySelectorAll('.code-tab-btn'));
+      const matchingIndex = buttons.findIndex(btn => btn.textContent.trim() === label);
+      if (matchingIndex !== -1) {
+        const currentActiveIndex = buttons.findIndex(btn => btn.getAttribute('aria-selected') === 'true');
+        if (matchingIndex !== currentActiveIndex) {
+          window.switchCodeTab(container.dataset.codeTabs, matchingIndex, false);
+        }
+      }
+    });
+  });
+
+  // Global keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    const btn = e.target;
+    if (!btn.classList.contains('code-tab-btn')) return;
+
+    const container = btn.closest('[data-code-tabs]');
+    if (!container) return;
+
+    const buttons = Array.from(container.querySelectorAll('.code-tab-btn'));
+    const currentIndex = buttons.indexOf(btn);
+    let newIndex = currentIndex;
+
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      newIndex = (currentIndex + 1) % buttons.length;
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      newIndex = (currentIndex - 1 + buttons.length) % buttons.length;
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      newIndex = 0;
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      newIndex = buttons.length - 1;
+    } else {
+      return;
+    }
+
+    window.switchCodeTab(container.dataset.codeTabs, newIndex);
+    buttons[newIndex].focus();
+  });
+})();
+</script>

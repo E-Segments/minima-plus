@@ -68,6 +68,16 @@ defaults:
 
 # Theme Configuration
 theme_config:
+  # Announcement Bar
+  announcement_bar:
+    enabled: true
+    id: "v1-launch"
+    message: "Minima+ v1.0 is now live with Tailwind CSS v4 support!"
+    tag: "New"
+    link_text: "Check out the changelog"
+    link_url: "/changelog/"
+    closable: true
+
   # Colors (Tailwind color names)
   colors:
     primary: "indigo"
@@ -82,9 +92,15 @@ theme_config:
 
   # Layout
   layout:
-    max_width: "6xl"
+    max_width: "7xl"
     content_width: "3xl"
     sidebar: true
+
+  # Design Tokens (Customization)
+  tokens:
+    radius: "0.75rem"
+    font_weight_heading: "700"
+    font_weight_body: "400"
 
   # Components visibility
   components:

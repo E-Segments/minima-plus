@@ -1,0 +1,23 @@
+<!-- Reading Progress Bar -->
+<div id="reading-progress" class="fixed top-0 left-0 w-0 h-1 bg-primary-500 z-[110] transition-all duration-75 ease-out opacity-0" aria-hidden="true"></div>
+
+<script>
+(function() {
+  const progressBar = document.getElementById('reading-progress');
+  if (!progressBar) return;
+
+  window.addEventListener('scroll', () => {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (winScroll / height) * 100;
+    progressBar.style.width = scrolled + "%";
+
+    // Hide if at the very top
+    if (winScroll <= 0) {
+      progressBar.style.opacity = "0";
+    } else {
+      progressBar.style.opacity = "1";
+    }
+  }, { passive: true });
+})();
+</script>

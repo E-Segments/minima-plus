@@ -1,0 +1,25 @@
+{% if page.mermaid %}
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+      securityLevel: 'loose',
+      fontFamily: 'inherit'
+    });
+  });
+</script>
+<style>
+  .mermaid {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+    background: transparent !important;
+  }
+  .mermaid svg {
+    max-width: 100%;
+    height: auto;
+  }
+</style>
+{% endif %}
