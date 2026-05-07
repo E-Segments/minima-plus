@@ -1,0 +1,177 @@
+{% comment %}
+Documentation Sidebar Component
+Renders from _data/sidebars.yml if present, otherwise falls back to automatic parent-based grouping.
+{% endcomment %}
+
+<nav class="sticky top-24 space-y-1 pr-4" aria-label="Documentation navigation">
+  {% if site.data.sidebars.docs %}
+    {% comment %} Manual sidebar from data file {% endcomment %}
+    {% for section in site.data.sidebars.docs %}
+      {% assign section_id = section.title | slugify %}
+      {% assign has_active = false %}
+      {% for item in section.items %}
+        {% if page.url == item.url %}
+          {% assign has_active = true %}
+        {% endif %}
+      {% endfor %}
+
+      <div class="sidebar-section {% unless forloop.first %}mt-4{% endunless %}" data-section="{{ section_id }}">
+        <button type="button"
+                class="sidebar-section-header w-full flex items-center justify-between px-3 py-2 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider hover:text-slate-600 dark:hover:text-slate-400 transition-colors"
+                aria-expanded="{{ has_active }}"
+                aria-controls="section-{{ section_id }}"
+                data-sidebar-toggle="{{ section_id }}">
+          <span>{{ section.title }}</span>
+          <svg class="sidebar-chevron w-4 h-4 transition-transform duration-200 {% if has_active %}rotate-180{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div id="section-{{ section_id }}"
+             class="sidebar-section-items overflow-hidden transition-all duration-200 {% unless has_active %}hidden{% endunless %}"
+             role="region">
+          {% for item in section.items %}
+          <a href="{{ item.url | relative_url }}"
+             class="sidebar-link flex items-center px-3 py-2.5 text-sm rounded-lg transition-all ml-2
+                    {% if page.url == item.url %}
+                    text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 font-semibold border-l-2 border-primary-500
+                    {% else %}
+                    text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60
+                    {% endif %}">
+            {{ item.title }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+
+  {% else %}
+    {% comment %} Automatic fallback grouping by parent field {% endcomment %}
+    {% assign all_docs = site.docs | sort: "order" %}
+    {% assign ungrouped_docs = all_docs | where: "parent", nil | sort: "order" %}
+    {% assign parents = all_docs | map: "parent" | compact | uniq %}
+
+    {% if ungrouped_docs.size > 0 %}
+    <div class="sidebar-section" data-section="ungrouped">
+      {% for doc in ungrouped_docs %}
+      <a href="{{ doc.url | relative_url }}"
+         class="sidebar-link flex items-center px-3 py-2.5 text-sm rounded-lg transition-all
+                {% if page.url == doc.url %}
+                text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 font-semibold border-l-2 border-primary-500
+                {% else %}
+                text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60
+                {% endif %}">
+        {{ doc.title }}
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% for parent in parents %}
+      {% assign section_docs = all_docs | where: "parent", parent | sort: "order" %}
+      {% assign section_id = parent | slugify %}
+      {% assign has_active = false %}
+      {% for doc in section_docs %}
+        {% if page.url == doc.url %}
+          {% assign has_active = true %}
+        {% endif %}
+      {% endfor %}
+
+      <div class="sidebar-section mt-4" data-section="{{ section_id }}">
+        <button type="button"
+                class="sidebar-section-header w-full flex items-center justify-between px-3 py-2 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider hover:text-slate-600 dark:hover:text-slate-400 transition-colors"
+                aria-expanded="{{ has_active }}"
+                aria-controls="section-{{ section_id }}"
+                data-sidebar-toggle="{{ section_id }}">
+          <span>{{ parent }}</span>
+          <svg class="sidebar-chevron w-4 h-4 transition-transform duration-200 {% if has_active %}rotate-180{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div id="section-{{ section_id }}"
+             class="sidebar-section-items overflow-hidden transition-all duration-200 {% unless has_active %}hidden{% endunless %}"
+             role="region">
+          {% for doc in section_docs %}
+          <a href="{{ doc.url | relative_url }}"
+             class="sidebar-link flex items-center px-3 py-2.5 text-sm rounded-lg transition-all ml-2
+                    {% if page.url == doc.url %}
+                    text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 font-semibold border-l-2 border-primary-500
+                    {% else %}
+                    text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60
+                    {% endif %}">
+            {{ doc.title }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+</nav>
+
+<script>
+(function() {
+  const STORAGE_KEY = 'docs-sidebar-state';
+
+  function loadState() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveState(state) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {}
+  }
+
+  function toggleSection(sectionId, forceOpen) {
+    const header = document.querySelector(`[data-sidebar-toggle="${sectionId}"]`);
+    const content = document.getElementById(`section-${sectionId}`);
+    const chevron = header?.querySelector('.sidebar-chevron');
+
+    if (!header || !content) return;
+
+    const isCurrentlyOpen = header.getAttribute('aria-expanded') === 'true';
+    const shouldOpen = forceOpen !== undefined ? forceOpen : !isCurrentlyOpen;
+
+    header.setAttribute('aria-expanded', shouldOpen);
+
+    if (shouldOpen) {
+      content.classList.remove('hidden');
+      chevron?.classList.add('rotate-180');
+    } else {
+      content.classList.add('hidden');
+      chevron?.classList.remove('rotate-180');
+    }
+
+    const state = loadState();
+    state[sectionId] = shouldOpen;
+    saveState(state);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const state = loadState();
+    const toggles = document.querySelectorAll('[data-sidebar-toggle]');
+
+    toggles.forEach(toggle => {
+      const sectionId = toggle.dataset.sidebarToggle;
+      const hasActiveLink = toggle.closest('.sidebar-section')?.querySelector('.border-primary-500');
+
+      if (hasActiveLink) {
+        toggleSection(sectionId, true);
+      } else if (state[sectionId] !== undefined) {
+        toggleSection(sectionId, state[sectionId]);
+      }
+
+      toggle.addEventListener('click', () => toggleSection(sectionId));
+      toggle.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleSection(sectionId);
+        }
+      });
+    });
+  });
+})();
+</script>

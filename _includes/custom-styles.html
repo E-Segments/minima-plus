@@ -41,7 +41,7 @@
   flex-direction: column;
   padding: 1.5rem;
   background: #ffffff;
-  border-radius: 1rem;
+  border-radius: var(--radius-default);
   border: 1px solid #e2e8f0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none !important;
@@ -244,7 +244,7 @@
 
 .callout {
   padding: 1rem 1.25rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-default);
   margin: 1.5rem 0;
   font-size: 0.9375rem;
   line-height: 1.6;
@@ -327,7 +327,7 @@
 .prose table {
   border-collapse: separate;
   border-spacing: 0;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-default);
   overflow: hidden;
   border: 1px solid #e2e8f0;
 }
@@ -361,7 +361,7 @@
    ======================================== */
 
 .prose pre {
-  border-radius: 0.75rem;
+  border-radius: var(--radius-default);
 }
 
 .prose :not(pre) > code {
@@ -376,6 +376,24 @@
 .dark .prose :not(pre) > code {
   background-color: rgba(51, 65, 85, 0.6);
   color: #fb7185;
+}
+
+/* ========================================
+   GLOBAL TYPOGRAPHY & TOKENS
+   ======================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: {{ site.theme_config.fonts.heading | default: "Inter" }}, system-ui, sans-serif !important;
+  font-weight: var(--font-weight-heading) !important;
+}
+
+body {
+  font-family: {{ site.theme_config.fonts.body | default: "Inter" }}, system-ui, sans-serif;
+  font-weight: var(--font-weight-body);
+}
+
+.font-heading {
+  font-family: {{ site.theme_config.fonts.heading | default: "Inter" }}, system-ui, sans-serif !important;
 }
 
 /* ========================================

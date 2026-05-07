@@ -1,0 +1,52 @@
+{% if site.theme_config.announcement_bar.enabled %}
+<div id="announcement-bar" class="relative z-50 bg-primary-600 dark:bg-primary-700 text-white">
+  <div class="max-w-7xl mx-auto py-2.5 px-4 sm:px-6 lg:px-8">
+    <div class="pr-16 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm font-medium">
+      <span class="flex items-center">
+        {% if site.theme_config.announcement_bar.tag %}
+        <span class="bg-white/20 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider mr-2">{{ site.theme_config.announcement_bar.tag }}</span>
+        {% endif %}
+        {{ site.theme_config.announcement_bar.message }}
+      </span>
+      {% if site.theme_config.announcement_bar.link_text and site.theme_config.announcement_bar.link_url %}
+      <a href="{{ site.theme_config.announcement_bar.link_url | relative_url }}" class="underline decoration-2 underline-offset-4 hover:text-white/80 transition-colors">
+        {{ site.theme_config.announcement_bar.link_text }} <span aria-hidden="true">&rarr;</span>
+      </a>
+      {% endif %}
+    </div>
+    {% if site.theme_config.announcement_bar.closable %}
+    <div class="absolute inset-y-0 right-0 pt-1 pr-1 flex items-start sm:pt-1 sm:pr-2 sm:items-start">
+      <button type="button"
+              id="close-announcement"
+              class="flex p-2 rounded-md hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white transition-all"
+              aria-label="Dismiss">
+        <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if site.theme_config.announcement_bar.closable %}
+<script>
+(function() {
+  const bar = document.getElementById('announcement-bar');
+  const closeBtn = document.getElementById('close-announcement');
+  const storageKey = 'announcement-dismissed-{{ site.theme_config.announcement_bar.id | default: "v1" }}';
+
+  if (localStorage.getItem(storageKey)) {
+    bar.style.display = 'none';
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      bar.style.display = 'none';
+      localStorage.setItem(storageKey, 'true');
+    });
+  }
+})();
+</script>
+{% endif %}
+{% endif %}

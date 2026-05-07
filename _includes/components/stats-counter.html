@@ -109,10 +109,10 @@
       numStr = numStr.substring(prefix.length);
     }
 
-    // Extract suffix (non-numeric at end, excluding decimals)
-    const suffixMatch = numStr.match(/([^0-9.]+)$/);
+    // Extract suffix (all non-numeric characters at the end)
+    const suffixMatch = numStr.match(/[^0-9.]+.*$/);
     if (suffixMatch) {
-      suffix = suffixMatch[1];
+      suffix = suffixMatch[0];
       numStr = numStr.substring(0, numStr.length - suffix.length);
     }
 
@@ -123,12 +123,11 @@
 
     // Parse multipliers
     let multiplier = 1;
-    if (suffix.toUpperCase() === 'K') {
+    const cleanSuffix = suffix.toUpperCase();
+    if (cleanSuffix.includes('K')) {
       multiplier = 1000;
-      suffix = 'K';
-    } else if (suffix.toUpperCase() === 'M') {
+    } else if (cleanSuffix.includes('M')) {
       multiplier = 1000000;
-      suffix = 'M';
     }
 
     const num = parseFloat(numStr) || 0;

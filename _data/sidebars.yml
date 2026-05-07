@@ -1,0 +1,32 @@
+# Documentation Sidebar Configuration
+# If this file exists, it will override the automatic parent-based grouping.
+
+docs:
+  - title: "Getting Started"
+    items:
+      - title: "Introduction"
+        url: "/docs/getting-started/"
+      - title: "Configuration"
+        url: "/docs/configuration/"
+      - title: "Features"
+        url: "/docs/features/"
+
+  - title: "Components"
+    items:
+      - title: "UI Kit"
+        url: "/docs/ui-kit/"
+      - title: "All Components"
+        url: "/docs/components/"
+      - title: "Mermaid Diagrams"
+        url: "/docs/mermaid/"
+
+  - title: "Advanced"
+    items:
+      - title: "Customization"
+        url: "/docs/customization/"
+      - title: "Deployment"
+        url: "/docs/deployment/"
+      - title: "Troubleshooting"
+        url: "/docs/troubleshooting/"
+      - title: "Accessibility"
+        url: "/docs/accessibility/"
